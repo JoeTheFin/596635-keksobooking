@@ -46,12 +46,14 @@ function getRandomInt(min, max) {
 function createArrayFromRandomParts(array) {
   var arrayExample = [];
   for (var i = 0; i < array.length; i++) {
-    Math.random() > 0.5 ? arrayExample[i] : arrayExample;
+    if (Math.random() > 0.5) {
+      arrayExample[i]
+    } else {
+        arrayExample
+      }
   }
   return arrayExample;
 };
-
-//function() //to do функция рандома для бонусов
 
 var getExampleArray = function (number) {
   var array = [];
@@ -88,3 +90,29 @@ console.log(example);
 
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
+
+var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+
+var divMapPins = document.querySelector('.map__pins')
+
+var renderMapPin = function () {
+  var pinElement = pinTemplate.cloneNode(true);
+  pinElement.style.left = (object.location.x + 20) + 'px'; //вопрос Денису: как искать атрибут src или style
+  pinElement.style.top = (object.location.y + 40) + 'px';
+  pinElement.src = object.author.avatar;
+  pinElement.alt = object.offer.title;
+
+  return pinElement;
+};
+
+var paintMapPin = function () {
+  for (var i = 0; i < number; i++) {
+    var newPinElement = document.createElement('button');
+    divMapPins.appendChild(newPinElement);
+  }
+}
+
+
+
+
+
