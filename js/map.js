@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 var TITLE_ARRAY = [
   'Большая уютная квартира',
@@ -51,20 +51,20 @@ var getRandomInt = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-var createArrayFromRandomParts = function (arr) { //вопрос с этой функцией
+var createArrayFromRandomParts = function (arr) {
   var arrayExample = [];
   for (var i = 0; i < arr.length; i++) {
     if (Math.random() > 0.5) {
-      arrayExample.push[i];
+      arrayExample.push([i]);
     } else {
-        arrayExample;
-      }
+      arrayExample = [];
+    }
   }
   return arrayExample;
 };
 
 var getExampleArray = function (number) {
-  var array =[];
+  var array = [];
   for (var i = 1; i <= number; i++) {
     var locationX = getRandomInt(130, 631);
     var locationY = getRandomInt(130, 631);
@@ -83,7 +83,10 @@ var getExampleArray = function (number) {
         checkout: CHECK_ARRAY[getRandomInt(0, CHECK_ARRAY.length)],
         features: createArrayFromRandomParts(FEATURES_ARRAY),
         description: '',
-        photos: PHOTOS_ARRAY.sort(function(){return Math.random() - 0.5})
+        photos: PHOTOS_ARRAY.sort(function () {
+          return Math.random() - 0.5
+          ;
+        })
       },
       location: {
         x: locationX,
@@ -98,10 +101,10 @@ var getExampleArray = function (number) {
 var renderPinElement = function (array) {
   var pinElement = pinTemplate.cloneNode(true);
 
-  pinElement.style.left = (array[i].location.x + pinElement.width / 2) + 'px';
-  pinElement.style.top = (array[i].location.y + pinElement.height) + 'px';
-  pinElement.src = array[i].author.avatar;
-  pinElement.alt = array[i].offer.title;
+  pinElement.style.left = (array.location.x + pinElement.width / 2) + 'px';
+  pinElement.style.top = (array.location.y + pinElement.height) + 'px';
+  pinElement.src = array.author.avatar;
+  pinElement.alt = array.offer.title;
 
   return pinElement;
 };
@@ -111,12 +114,12 @@ var createPinFragment = function (array) {
   var pinFragment = Document.createDocumentFragment();
 
   for (var j = 0; j < array.length - 1; j++) {
-    var resultMap = renderPinElement(array[i]);
+    var resultMap = renderPinElement(array[j]);
     pinFragment.appendChild(resultMap);
   }
 
   divMapPins.appendChild(pinFragment);
-}
+};
 
 // клонирование шаблона объявления и его заполнение
 var renderCardElement = function (array) {
@@ -129,21 +132,21 @@ var renderCardElement = function (array) {
   cardElement.querySelector('.popup__text--price').textContent = array[0].offer.price + '₽/ночь';
 
   cardElement.querySelector('.popup__type').textContent = array[0].offer.type;
-    if (array[0].offer.type === 'flat') {
-      cardElement.textContent = 'Квартира';
-    } else if (array[0].offer.type === 'bungalo') {
-      cardElement.textContent = 'Бунгало';
-    } else if (array[0].offer.type === 'house') {
-      cardElement.textContent = 'Дом';
-    } else if (array[0].offer.type === 'palace') {
-      cardElement.textContent = 'Дворец';
-    }
+  if (array[0].offer.type === 'flat') {
+    cardElement.textContent = 'Квартира';
+  } else if (array[0].offer.type === 'bungalo') {
+    cardElement.textContent = 'Бунгало';
+  } else if (array[0].offer.type === 'house') {
+    cardElement.textContent = 'Дом';
+  } else if (array[0].offer.type === 'palace') {
+    cardElement.textContent = 'Дворец';
+  }
 
   cardElement.querySelector('.popup__text--capacity').textContent = array[0].offer.rooms + 'комнаты для' + array[0].offer.guests + 'гостей';
 
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после' + array[0].offer.checkin + ', выезд до ' + array[0].offer.checkout;
 
-  var featuresCard = cardElement.querySelector('.popup__features'); //цикл вставки всех features
+  var featuresCard = cardElement.querySelector('.popup__features'); // цикл вставки всех features
   var fragmentFeaturesCard = document.createDocumentFragment();
   for (var f = 0; f < array[0].offer.features.length; f++) {
     var featuresElement = document.createElement('li');
@@ -153,9 +156,9 @@ var renderCardElement = function (array) {
 
   cardElement.querySelector('.popup__description').textContent = array[0].offer.description;
 
-  var photosCard = cardElement.querySelector('.popup__photos'); //цикл вставки photos
+  var photosCard = cardElement.querySelector('.popup__photos'); // цикл вставки photos
   var fragmentPhotosCard = document.createDocumentFragment();
-  for (var p = 0 ; p < array[0].offer.photos.length; p++) {
+  for (var p = 0; p < array[0].offer.photos.length; p++) {
     var photosElement = document.createElement('img');
     photosElement.src = array[0].offer.photos;
     fragmentPhotosCard.appendChild(photosElement);
@@ -177,11 +180,12 @@ var createCardFragment = function (array) {
     cardFragment.appendChild(resultCard);
   }
 
-  map.empty(cardFragment, filtersContainer); // очистить содержимое контейнера
+  map.empty(cardFragment); // очистить содержимое контейнера
   map.insertBefore(cardFragment, filtersContainer); // фрагмент вставляем в контейнер
-}
+};
 
 var exampleArray = getExampleArray(numberPins);
-iterateMapPin(exampleArray);
+createCardFragment(exampleArray);
+createPinFragment(exampleArray);
 
 map.classList.remove('map--faded');
