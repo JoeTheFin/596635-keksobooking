@@ -123,8 +123,11 @@ var renderCardElement = function (array) {
   var cardElement = cardTemplate.cloneNode(true); // клонировать шаблон в элемент
 
   cardElement.querySelector('.popup__title').textContent = array[0].offer.title;
+
   cardElement.querySelector('.popup__text--address').textContent = array[0].offer.address;
+
   cardElement.querySelector('.popup__text--price').textContent = array[0].offer.price + '₽/ночь';
+
   cardElement.querySelector('.popup__type').textContent = array[0].offer.type;
     if (array[0].offer.type === 'flat') {
       cardElement.textContent = 'Квартира';
@@ -135,11 +138,32 @@ var renderCardElement = function (array) {
     } else if (array[0].offer.type === 'palace') {
       cardElement.textContent = 'Дворец';
     }
+
   cardElement.querySelector('.popup__text--capacity').textContent = array[0].offer.rooms + 'комнаты для' + array[0].offer.guests + 'гостей';
+
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после' + array[0].offer.checkin + ', выезд до ' + array[0].offer.checkout;
-  cardElement.querySelector('.popup__features').textContent = array[0].offer.features;
+
+  var featuresCard = cardElement.querySelector('.popup__features'); //цикл вставки всех features
+  var fragmentFeaturesCard = document.createDocumentFragment();
+  for (var f = 0; f < array[0].offer.features.length; f++) {
+    var featuresElement = document.createElement('li');
+    fragmentFeaturesCard.appendChild(featuresElement);
+  }
+  featuresCard.appendChild(fragmentFeaturesCard);
+
   cardElement.querySelector('.popup__description').textContent = array[0].offer.description;
-  cardElement.querySelector('.popup__photos').src = array[0].offer.photos; //вопрос Денису: В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения.
+
+  var photosCard = cardElement.querySelector('.popup__photos'); //цикл вставки photos
+  var fragmentPhotosCard = document.createDocumentFragment();
+  for (var p = 0 ; p < array[0].offer.photos.length; p++) {
+    var photosElement = document.createElement('img');
+    photosElement.src = array[0].offer.photos;
+    fragmentPhotosCard.appendChild(photosElement);
+  }
+  photosCard.appendChild(fragmentPhotosCard);
+
+  var avatarCard = cardElement.querySelector('.popup__avatar');
+  avatarCard.src = array[0].author.avatar;
 
   return cardElement;
 };
@@ -148,7 +172,7 @@ var renderCardElement = function (array) {
 var createCardFragment = function (array) {
   var cardFragment = Document.createDocumentFragment();
 
-  for (var l = 0; l < array.length - 1; l++) {
+  for (var r = 0; r < array.length - 1; r++) {
     var resultCard = renderCardElement(array[0]);
     cardFragment.appendChild(resultCard);
   }
