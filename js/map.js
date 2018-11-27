@@ -65,7 +65,7 @@ var createArrayFromRandomParts = function (arr) {
 
 var getExampleArray = function (number) {
   var array = [];
-  for (var i = 1; i <= number; i++) {
+  for (var i = 0; i < number; i++) {
     var locationX = getRandomInt(130, 631);
     var locationY = getRandomInt(130, 631);
     array[i] = {
@@ -150,7 +150,7 @@ var renderCardElement = function (mapArray) {
 
   var featuresCard = cardElement.querySelector('.popup__features'); // цикл вставки всех features
   var fragmentFeaturesCard = document.createDocumentFragment();
-  for (var f = 0; f < mapArray.offer.features.length; f++) {
+  for (var f = 0; f < mapArray.offer.features.length - 1; f++) {
     var featuresElement = document.createElement('li');
     fragmentFeaturesCard.appendChild(featuresElement);
   }
@@ -160,7 +160,7 @@ var renderCardElement = function (mapArray) {
 
   var photosCard = cardElement.querySelector('.popup__photos'); // цикл вставки photos
   var fragmentPhotosCard = document.createDocumentFragment();
-  for (var p = 0; p < mapArray.offer.photos.length; p++) {
+  for (var p = 0; p < mapArray.offer.photos.length - 1; p++) {
     var photosElement = document.createElement('img');
     photosElement.src = mapArray.offer.photos;
     fragmentPhotosCard.appendChild(photosElement);
