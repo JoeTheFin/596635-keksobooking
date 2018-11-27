@@ -97,24 +97,26 @@ var getExampleArray = function (number) {
   return array;
 };
 
+var createNewMap = getExampleArray(numberPins);
+
 // клонирование метки и заполнение данных метки
-var renderPinElement = function (array) {
+var renderPinElement = function (mapArray) {
   var pinElement = pinTemplate.cloneNode(true);
 
-  pinElement.style.left = (array.location.x + pinElement.width / 2) + 'px';
-  pinElement.style.top = (array.location.y + pinElement.height) + 'px';
-  pinElement.src = array.author.avatar;
-  pinElement.alt = array.offer.title;
+  pinElement.style.left = (mapArray.location.x + pinElement.width / 2) + 'px';
+  pinElement.style.top = (mapArray.location.y + pinElement.height) + 'px';
+  pinElement.src = mapArray.author.avatar;
+  pinElement.alt = mapArray.offer.title;
 
   return pinElement;
 };
 
 // создание фрагмента метки и вставка его на страницу
-var createPinFragment = function (array) {
+var createPinFragment = function (mapArray) {
   var pinFragment = Document.createDocumentFragment();
 
-  for (var j = 0; j < array.length - 1; j++) {
-    var resultMap = renderPinElement(array[j]);
+  for (var j = 0; j < mapArray.length - 1; j++) {
+    var resultMap = renderPinElement(mapArray[j]);
     pinFragment.appendChild(resultMap);
   }
 
@@ -122,61 +124,61 @@ var createPinFragment = function (array) {
 };
 
 // клонирование шаблона объявления и его заполнение
-var renderCardElement = function (array) {
+var renderCardElement = function (mapArray) {
   var cardElement = cardTemplate.cloneNode(true); // клонировать шаблон в элемент
 
-  cardElement.querySelector('.popup__title').textContent = array[0].offer.title;
+  cardElement.querySelector('.popup__title').textContent = mapArray.offer.title;
 
-  cardElement.querySelector('.popup__text--address').textContent = array[0].offer.address;
+  cardElement.querySelector('.popup__text--address').textContent = mapArray.offer.address;
 
-  cardElement.querySelector('.popup__text--price').textContent = array[0].offer.price + '₽/ночь';
+  cardElement.querySelector('.popup__text--price').textContent = mapArray.offer.price + '₽/ночь';
 
-  cardElement.querySelector('.popup__type').textContent = array[0].offer.type;
-  if (array[0].offer.type === 'flat') {
+  cardElement.querySelector('.popup__type').textContent = mapArray.offer.type;
+  if (mapArray.offer.type === 'flat') {
     cardElement.textContent = 'Квартира';
-  } else if (array[0].offer.type === 'bungalo') {
+  } else if (mapArray.offer.type === 'bungalo') {
     cardElement.textContent = 'Бунгало';
-  } else if (array[0].offer.type === 'house') {
+  } else if (mapArray.offer.type === 'house') {
     cardElement.textContent = 'Дом';
-  } else if (array[0].offer.type === 'palace') {
+  } else if (mapArray.offer.type === 'palace') {
     cardElement.textContent = 'Дворец';
   }
 
-  cardElement.querySelector('.popup__text--capacity').textContent = array[0].offer.rooms + 'комнаты для' + array[0].offer.guests + 'гостей';
+  cardElement.querySelector('.popup__text--capacity').textContent = mapArray.offer.rooms + 'комнаты для' + mapArray.offer.guests + 'гостей';
 
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после' + array[0].offer.checkin + ', выезд до ' + array[0].offer.checkout;
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после' + mapArray.offer.checkin + ', выезд до ' + mapArray.offer.checkout;
 
   var featuresCard = cardElement.querySelector('.popup__features'); // цикл вставки всех features
   var fragmentFeaturesCard = document.createDocumentFragment();
-  for (var f = 0; f < array[0].offer.features.length; f++) {
+  for (var f = 0; f < mapArray.offer.features.length; f++) {
     var featuresElement = document.createElement('li');
     fragmentFeaturesCard.appendChild(featuresElement);
   }
   featuresCard.appendChild(fragmentFeaturesCard);
 
-  cardElement.querySelector('.popup__description').textContent = array[0].offer.description;
+  cardElement.querySelector('.popup__description').textContent = mapArray.offer.description;
 
   var photosCard = cardElement.querySelector('.popup__photos'); // цикл вставки photos
   var fragmentPhotosCard = document.createDocumentFragment();
-  for (var p = 0; p < array[0].offer.photos.length; p++) {
+  for (var p = 0; p < mapArray.offer.photos.length; p++) {
     var photosElement = document.createElement('img');
-    photosElement.src = array[0].offer.photos;
+    photosElement.src = mapArray.offer.photos;
     fragmentPhotosCard.appendChild(photosElement);
   }
   photosCard.appendChild(fragmentPhotosCard);
 
   var avatarCard = cardElement.querySelector('.popup__avatar');
-  avatarCard.src = array[0].author.avatar;
+  avatarCard.src = mapArray.author.avatar;
 
   return cardElement;
 };
 
 // создание фрагмента карточки и вставка её на страницу
-var createCardFragment = function (array) {
+var createCardFragment = function (mapArray) {
   var cardFragment = Document.createDocumentFragment();
 
-  for (var r = 0; r < array.length - 1; r++) {
-    var resultCard = renderCardElement(array[0]);
+  for (var r = 0; r < mapArray.length - 1; r++) {
+    var resultCard = renderCardElement(mapArray[r]);
     cardFragment.appendChild(resultCard);
   }
 
@@ -184,8 +186,10 @@ var createCardFragment = function (array) {
   map.insertBefore(cardFragment, filtersContainer); // фрагмент вставляем в контейнер
 };
 
-var exampleArray = getExampleArray(numberPins);
-createCardFragment(exampleArray);
-createPinFragment(exampleArray);
+renderPinElement(createNewMap);
+renderCardElement(createNewMap[0]);
+
+createPinFragment(createNewMap);
+createCardFragment(createNewMap[0]);
 
 map.classList.remove('map--faded');
