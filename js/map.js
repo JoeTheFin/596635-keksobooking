@@ -39,6 +39,15 @@ var PHOTOS_ARRAY = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
+var MIN_ROOMS = 1;
+var MAX_ROOMS = 5;
+var MIN_GUESTS = 1;
+var MAX_GUESTS = 10;
+var MIN_PRICE = 1000;
+var MAX_PRICE = 1000000;
+var MIN_LOCATION = 130;
+var MAX_LOCATION = 630;
+
 var numberPins = 8;
 
 var map = document.querySelector('.map');
@@ -66,8 +75,8 @@ var createArrayFromRandomParts = function (arr) {
 var getExampleArray = function (number) {
   var array = [];
   for (var i = 0; i < number; i++) {
-    var locationX = getRandomInt(130, 631);
-    var locationY = getRandomInt(130, 631);
+    var locationX = getRandomInt(MIN_LOCATION, MAX_LOCATION + 1);
+    var locationY = getRandomInt(MIN_LOCATION, MAX_LOCATION + 1);
     array[i] = {
       author: {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
@@ -75,10 +84,10 @@ var getExampleArray = function (number) {
       offer: {
         title: TITLE_ARRAY[i],
         address: locationX + ', ' + locationY,
-        price: getRandomInt(1000, 1000001),
+        price: getRandomInt(MIN_PRICE, MAX_PRICE + 1),
         type: TYPE_ARRAY[getRandomInt(0, TYPE_ARRAY.length)],
-        rooms: getRandomInt(1, 6),
-        guests: getRandomInt(1, 10),
+        rooms: getRandomInt(MIN_ROOMS, MAX_ROOMS),
+        guests: getRandomInt(MIN_GUESTS, MAX_GUESTS),
         checkin: CHECK_ARRAY[getRandomInt(0, CHECK_ARRAY.length)],
         checkout: CHECK_ARRAY[getRandomInt(0, CHECK_ARRAY.length)],
         features: createArrayFromRandomParts(FEATURES_ARRAY),
