@@ -52,18 +52,23 @@ var PIN_HEIGHT = 40;
 
 var numberPins = 8;
 
+var map = document.querySelector('.map');
+var pinTemplate = document.querySelector('#pin');
+var pinTemplateItem = pinTemplate.content.querySelector('.map__pin');
+var divMapPins = document.querySelector('.map__pins');
+var cardTemplate = document.querySelector('#card');
+var cardTemplateItem = cardTemplate.content.querySelector('.map__card');
+var filtersContainer = document.querySelector('.map__filters-container');
+
 var getRandomInt = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
 var createArrayFromRandomParts = function (arr) {
   var arrayExample = [];
-  for (var i = 0; i < arr.length; i++) {
-    if (Math.random() > 0.5) {
-      arrayExample.push([i]);
-    } else {
-      arrayExample = [];
-    }
+  arrayExample.length = getRandomInt(0, arr.length + 1);
+  for (var i = 0; i < arrayExample.length; i++) {
+    arrayExample[i] = arr[i];
   }
   return arrayExample;
 };
@@ -102,34 +107,22 @@ var getExampleArray = function (number) {
   return array;
 };
 
-var createNewMap = getExampleArray(numberPins);
-
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-var pinTemplate = document.querySelector('#pin');
-var pinTemplateItem = pinTemplate.content.querySelector('.map__pin');
-var divMapPins = document.querySelector('.map__pins');
-var cardTemplate = document.querySelector('#card');
-var cardTemplateItem = cardTemplate.content.querySelector('.map__card');
-var filtersContainer = document.querySelector('.map__filters-container');
-
 // клонирование метки и заполнение данных метки
 var renderPinElement = function (mapArray) {
-  for (var k = 0; k > mapArray.length; k++) {
+  var pinElement = pinTemplateItem.cloneNode(true);
+  var pinElementImage = pinElement.querySelector('img');
 
-    var pinElement = pinTemplateItem.cloneNode(true);
+  pinElement.style.left = (mapArray.location.x + PIN_WIDTH / 2) + 'px';
+  pinElement.style.top = (mapArray.location.y + PIN_HEIGHT) + 'px';
+  pinElementImage.src = mapArray.author.avatar;
+  pinElementImage.alt = mapArray.offer.title;
 
-    pinElement.style.left = (mapArray[k].location.x + PIN_WIDTH / 2) + 'px';
-    pinElement.style.top = (mapArray[k].location.y + PIN_HEIGHT) + 'px';
-    pinElement.src = mapArray[k].author.avatar;
-    pinElement.alt = mapArray[k].offer.title;
-  }
   return pinElement;
 };
 
 // создание фрагмента метки и вставка его на страницу
 var createPinFragment = function (mapArray) {
-  var pinFragment = Document.createDocumentFragment();
+  var pinFragment = document.createDocumentFragment();
 
   for (var j = 0; j < mapArray.length; j++) {
     var resultMap = renderPinElement(mapArray[j]);
@@ -151,36 +144,47 @@ var renderCardElement = function (mapArray) {
 
   cardElement.querySelector('.popup__text--price').textContent = mapArray.offer.price + '₽/ночь';
 
-  cardElement.querySelector('.popup__type').textContent = mapArray.offer.type;
-  if (mapArray.offer.type === 'flat') {
-    cardElement.textContent = 'Квартира';
-  } else if (mapArray.offer.type === 'bungalo') {
-    cardElement.textContent = 'Бунгало';
-  } else if (mapArray.offer.type === 'house') {
-    cardElement.textContent = 'Дом';
-  } else if (mapArray.offer.type === 'palace') {
-    cardElement.textContent = 'Дворец';
+  var typeCard = cardElement.querySelector('.popup__type');
+
+  switch (mapArray.offer.type) {
+    case 'flat' :
+      typeCard.textContent = 'Квартира';
+      break;
+    case 'bungalo' :
+      typeCard.textContent = 'Бунгало';
+      break;
+    case 'house' :
+      typeCard.textContent = 'Дом';
+      break;
+    case 'palace' :
+      typeCard.textContent = 'Дворец';
+      break;
   }
 
   cardElement.querySelector('.popup__text--capacity').textContent = mapArray.offer.rooms + ' комнаты для ' + mapArray.offer.guests + ' гостей';
 
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после' + mapArray.offer.checkin + ', выезд до ' + mapArray.offer.checkout;
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + mapArray.offer.checkin + ', выезд до ' + mapArray.offer.checkout;
 
-  var featuresCard = cardElement.querySelector('.popup__features'); // цикл вставки всех features
+  var featuresCard = cardElement.querySelector('.popup__features');
+  featuresCard.innerHTML = '';
   var fragmentFeaturesCard = document.createDocumentFragment();
   for (var f = 0; f < mapArray.offer.features.length; f++) {
     var featuresElement = document.createElement('li');
+    featuresElement.classList = 'popup__feature popup__feature--' + mapArray.offer.features[f]; // без указания класса, он не отрисовывает преимущества на карте
     fragmentFeaturesCard.appendChild(featuresElement);
   }
   featuresCard.appendChild(fragmentFeaturesCard);
 
   cardElement.querySelector('.popup__description').textContent = mapArray.offer.description;
 
-  var photosCard = cardElement.querySelector('.popup__photos'); // цикл вставки photos
+  var photosCard = cardElement.querySelector('.popup__photos');
+  photosCard.innerHTML = '';
   var fragmentPhotosCard = document.createDocumentFragment();
   for (var p = 0; p < mapArray.offer.photos.length; p++) {
     var photosElement = document.createElement('img');
-    photosElement.src = mapArray.offer.photos;
+    photosElement.src = mapArray.offer.photos[p];
+    photosElement.width = 45;
+    photosElement.height = 40;
     fragmentPhotosCard.appendChild(photosElement);
   }
   photosCard.appendChild(fragmentPhotosCard);
@@ -193,20 +197,16 @@ var renderCardElement = function (mapArray) {
 
 // создание фрагмента карточки и вставка её на страницу
 var createCardFragment = function (mapArray) {
-  var cardFragment = Document.createDocumentFragment();
-
-  for (var r = 0; r < mapArray.length; r++) {
-    var resultCard = renderCardElement(mapArray[r]);
-    cardFragment.appendChild(resultCard);
-  }
-
-  map.empty(cardFragment); // очистить содержимое контейнера
-  map.insertBefore(cardFragment, filtersContainer); // фрагмент вставляем в контейнер
+  var cardFragment = document.createDocumentFragment();
+  var resultCard = renderCardElement(mapArray);
+  cardFragment.appendChild(resultCard);
+  map.insertBefore(cardFragment, filtersContainer);
   return cardFragment;
 };
 
-renderPinElement(createNewMap);
-renderCardElement(createNewMap[0]);
+var createNewMap = getExampleArray(numberPins);
 
 createPinFragment(createNewMap);
 createCardFragment(createNewMap[0]);
+
+map.classList.remove('map--faded');
