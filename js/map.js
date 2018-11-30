@@ -49,6 +49,8 @@ var MIN_LOCATION = 130;
 var MAX_LOCATION = 630;
 var PIN_WIDTH = 40;
 var PIN_HEIGHT = 40;
+var ESC_KEY = 27;
+var ENTER_KEY = 13;
 
 var numberPins = 8;
 
@@ -195,7 +197,7 @@ var renderCardElement = function (mapArray) {
   return cardElement;
 };
 
-// создание фрагмента карточки и вставка её на страницу
+// создание фрагмента карточки и вставка его на страницу
 var createCardFragment = function (mapArray) {
   var cardFragment = document.createDocumentFragment();
   var resultCard = renderCardElement(mapArray);
@@ -204,9 +206,81 @@ var createCardFragment = function (mapArray) {
   return cardFragment;
 };
 
-var createNewMap = getExampleArray(numberPins);
+var createAds = getExampleArray(numberPins);
 
-createPinFragment(createNewMap);
-createCardFragment(createNewMap[0]);
+var mapPinMain = document.querySelector('.map__pin--main');
+var mapFilters = map.querySelector('.map__filters');
+var adForm = document.querySelector('.ad-form');
+var adFormAddress = adForm.querySelector('#address');
 
-map.classList.remove('map--faded');
+var deactivatedForm = function (form, boolean) {
+  for (var i = 0; i < form.children.length; i++) {
+    form.children[i].disabled = boolean;
+  }
+};
+
+deactivatedForm(adForm, true);
+deactivatedForm(mapFilters, true);
+
+var renderLocation = function () {
+  return '100, 100'; // todo создать функцию подставки координат
+};
+
+var activatePage = function () {
+  map.classList.remove('map--fadded');
+  adForm.classList.remove('ad-form--disabled');
+
+  deactivatedForm(adForm, false);
+  deactivatedForm(mapFilters, false);
+
+  createPinFragment(createAds);
+
+  adFormAddress.value = renderLocation();
+
+  mapPinMain.removeEventListener('mouseup', activatePage);
+
+  var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin');
+
+  for (var i = 0; i < mapCreatePinsAll.length; i++) {
+    onPinClick(mapCreatePinsAll[i], createAds[i]); // вызываю функцию обработчика клика на пин
+  }
+};
+
+var onPinClick = function (allPins, mapArray) { // создаю функцию обработчика клика на пин
+  allPins.addEventListener('click', function () {
+    var popup = map.querySelector('.popup');
+    var titleAds = mapArray.offer.title;
+
+    var removeChild = function () { // функция удаления ребенка из видимой части карты
+      map.removeChild(popup); // или  можно навесить popup.classList.add('hidden')... как лучше?
+    };
+
+    var onPopupCloseClick = function () { // функция закрытия окна по нажатию Esc
+      var popupClose = popup.querySelector('.popup__close');
+      popupClose.addEventListener('click', removeChild);
+      document.addEventListener('keydown', function (evt) {
+        if (evt.keyCode === ESC_KEY) {
+          removeChild();
+        }
+      });
+      popupClose.addEventListener('focus', function () { // функция закрытия окна при фокусе на "крестик" и Ent
+        popupClose.addEventListener('keydown', function (evt) {
+          if (evt.keyCode === ENTER_KEY) {
+            removeChild();
+          }
+        });
+      });
+    };
+
+    if (popup.querySelector('.popup__title').textContent === titleAds) { // сравниваю значение title из массива и title из открытой карточки
+      createCardFragment(mapArray);
+      onPopupCloseClick();
+    } else if (popup.querySelector('.popup__title').textContent !== titleAds) {
+      removeChild();
+      createCardFragment(mapArray);
+      onPopupCloseClick();
+    }
+  });
+};
+
+mapPinMain.addEventListener('mouseup', activatePage);
