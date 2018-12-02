@@ -235,7 +235,6 @@ var activatePage = function () {
   deactivatedForm(mapFilters, false);
 
   createPinFragment(createAds);
-  createCardFragment(createAds);
 
   adFormAddress.value = renderLocation();
 
@@ -244,7 +243,8 @@ var activatePage = function () {
   var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
 
   for (var i = 0; i < mapCreatePinsAll.length; i++) {
-    onPinClick(mapCreatePinsAll[i], createAds[i]); // вызываю функцию обработчика клика на пин
+    onPinClick(mapCreatePinsAll[i], createAds[i]);
+    createCardFragment(createAds[i]);
   }
 };
 
@@ -257,15 +257,6 @@ var onPinClick = function (allPins, mapArray) { // создаю функцию �
   allPins.addEventListener('click', function () {
     popup = map.querySelector('.popup');
     var titleAds = mapArray.offer.title;
-
-    if (popup.querySelector('.popup__title').textContent === titleAds) { // сравниваю значение title из массива и title из открытой карточки
-      createCardFragment(mapArray);
-      onPopupCloseClick();
-    } else if (popup.querySelector('.popup__title').textContent !== titleAds) {
-      removeChild();
-      createCardFragment(mapArray);
-      onPopupCloseClick();
-    }
 
     var onPopupCloseClick = function () { // функция закрытия окна по нажатию Esc
       var popupClose = popup.querySelector('.popup__close');
@@ -283,6 +274,15 @@ var onPinClick = function (allPins, mapArray) { // создаю функцию �
         });
       });
     };
+
+    if (popup.querySelector('.popup__title').textContent === titleAds) { // сравниваю значение title из массива и title из открытой карточки
+      createCardFragment(mapArray);
+      onPopupCloseClick();
+    } else if (popup.querySelector('.popup__title').textContent !== titleAds) {
+      removeChild();
+      createCardFragment(mapArray);
+      onPopupCloseClick();
+    }
   });
 };
 
