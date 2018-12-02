@@ -212,6 +212,7 @@ var mapPinMain = document.querySelector('.map__pin--main');
 var mapFilters = map.querySelector('.map__filters');
 var adForm = document.querySelector('.ad-form');
 var adFormAddress = adForm.querySelector('#address');
+var popup = map.querySelector('.popup');
 
 var deactivatedForm = function (form, boolean) {
   for (var i = 0; i < form.children.length; i++) {
@@ -227,13 +228,14 @@ var renderLocation = function () {
 };
 
 var activatePage = function () {
-  map.classList.remove('map--fadded');
+  map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
 
   deactivatedForm(adForm, false);
   deactivatedForm(mapFilters, false);
 
   createPinFragment(createAds);
+  createCardFragment(createAds);
 
   adFormAddress.value = renderLocation();
 
@@ -247,13 +249,13 @@ var activatePage = function () {
 };
 
 var removeChild = function () { // функция удаления ребенка из видимой части карты
-  var popup = map.querySelector('.popup');
+  popup = map.querySelector('.popup');
   map.removeChild(popup); // или  можно навесить popup.classList.add('hidden')... как лучше?
 };
 
 var onPinClick = function (allPins, mapArray) { // создаю функцию обработчика клика на пин
   allPins.addEventListener('click', function () {
-    var popup = map.querySelector('.popup');
+    popup = map.querySelector('.popup');
     var titleAds = mapArray.offer.title;
 
     if (popup.querySelector('.popup__title').textContent === titleAds) { // сравниваю значение title из массива и title из открытой карточки
