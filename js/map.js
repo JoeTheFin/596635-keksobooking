@@ -50,7 +50,6 @@ var MAX_LOCATION = 630;
 var PIN_WIDTH = 40;
 var PIN_HEIGHT = 40;
 var ESC_KEY = 27;
-var ENTER_KEY = 13;
 
 var numberPins = 8;
 
@@ -244,45 +243,37 @@ var activatePage = function () {
 
   for (var i = 0; i < mapCreatePinsAll.length; i++) {
     onPinClick(mapCreatePinsAll[i], createAds[i]);
-    createCardFragment(createAds[i]);
   }
 };
 
-var removeChild = function () { // функция удаления ребенка из видимой части карты
-  popup = map.querySelector('.popup');
-  map.removeChild(popup); // или  можно навесить popup.classList.add('hidden')... как лучше?
+var removeChild = function () {
+  map.removeChild(popup);
+  document.removeEventListener('keydown', onPopupCloseKey);
 };
 
-var onPinClick = function (allPins, mapArray) { // создаю функцию обработчика клика на пин
+var onPopupCloseKey = function (evt) {
+  if (evt.keyCode === ESC_KEY) {
+    removeChild();
+  }
+};
+
+var onPinClick = function (allPins, mapArray) {
   allPins.addEventListener('click', function () {
     popup = map.querySelector('.popup');
     var titleAds = mapArray.offer.title;
-
-    var onPopupCloseClick = function () { // функция закрытия окна по нажатию Esc
-      var popupClose = popup.querySelector('.popup__close');
-      popupClose.addEventListener('click', removeChild);
-      document.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === ESC_KEY) {
-          removeChild();
-        }
-      });
-      popupClose.addEventListener('focus', function () { // функция закрытия окна при фокусе на "крестик" и Ent
-        popupClose.addEventListener('keydown', function (evt) {
-          if (evt.keyCode === ENTER_KEY) {
-            removeChild();
-          }
-        });
-      });
-    };
-
-    if (popup.querySelector('.popup__title').textContent === titleAds) { // сравниваю значение title из массива и title из открытой карточки
-      createCardFragment(mapArray);
-      onPopupCloseClick();
-    } else if (popup.querySelector('.popup__title').textContent !== titleAds) {
+    if (popup) {
+      if (popup.querySelector('.popup__title').textContent === titleAds) {
+        return;
+      }
       removeChild();
-      createCardFragment(mapArray);
-      onPopupCloseClick();
     }
+
+    createCardFragment(mapArray);
+    popup = map.querySelector('.popup');
+    var popupClose = popup.querySelector('.popup__close');
+    popupClose.addEventListener('click', removeChild);
+
+    document.addEventListener('keydown', onPopupCloseKey);
   });
 };
 
