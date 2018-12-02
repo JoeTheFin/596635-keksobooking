@@ -239,11 +239,16 @@ var activatePage = function () {
 
   mapPinMain.removeEventListener('mouseup', activatePage);
 
-  var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin');
+  var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
 
   for (var i = 0; i < mapCreatePinsAll.length; i++) {
     onPinClick(mapCreatePinsAll[i], createAds[i]); // вызываю функцию обработчика клика на пин
   }
+};
+
+var removeChild = function () { // функция удаления ребенка из видимой части карты
+  var popup = map.querySelector('.popup');
+  map.removeChild(popup); // или  можно навесить popup.classList.add('hidden')... как лучше?
 };
 
 var onPinClick = function (allPins, mapArray) { // создаю функцию обработчика клика на пин
@@ -251,9 +256,14 @@ var onPinClick = function (allPins, mapArray) { // создаю функцию �
     var popup = map.querySelector('.popup');
     var titleAds = mapArray.offer.title;
 
-    var removeChild = function () { // функция удаления ребенка из видимой части карты
-      map.removeChild(popup); // или  можно навесить popup.classList.add('hidden')... как лучше?
-    };
+    if (popup.querySelector('.popup__title').textContent === titleAds) { // сравниваю значение title из массива и title из открытой карточки
+      createCardFragment(mapArray);
+      onPopupCloseClick();
+    } else if (popup.querySelector('.popup__title').textContent !== titleAds) {
+      removeChild();
+      createCardFragment(mapArray);
+      onPopupCloseClick();
+    }
 
     var onPopupCloseClick = function () { // функция закрытия окна по нажатию Esc
       var popupClose = popup.querySelector('.popup__close');
@@ -271,15 +281,6 @@ var onPinClick = function (allPins, mapArray) { // создаю функцию �
         });
       });
     };
-
-    if (popup.querySelector('.popup__title').textContent === titleAds) { // сравниваю значение title из массива и title из открытой карточки
-      createCardFragment(mapArray);
-      onPopupCloseClick();
-    } else if (popup.querySelector('.popup__title').textContent !== titleAds) {
-      removeChild();
-      createCardFragment(mapArray);
-      onPopupCloseClick();
-    }
   });
 };
 
