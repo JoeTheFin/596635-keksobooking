@@ -49,6 +49,7 @@ var MIN_LOCATION = 130;
 var MAX_LOCATION = 630;
 var PIN_WIDTH = 40;
 var PIN_HEIGHT = 40;
+var ESC_KEY = 27;
 
 var numberPins = 8;
 
@@ -195,7 +196,7 @@ var renderCardElement = function (mapArray) {
   return cardElement;
 };
 
-// создание фрагмента карточки и вставка её на страницу
+// создание фрагмента карточки и вставка его на страницу
 var createCardFragment = function (mapArray) {
   var cardFragment = document.createDocumentFragment();
   var resultCard = renderCardElement(mapArray);
@@ -204,9 +205,76 @@ var createCardFragment = function (mapArray) {
   return cardFragment;
 };
 
-var createNewMap = getExampleArray(numberPins);
+var createAds = getExampleArray(numberPins);
 
-createPinFragment(createNewMap);
-createCardFragment(createNewMap[0]);
+var mapPinMain = document.querySelector('.map__pin--main');
+var mapFilters = map.querySelector('.map__filters');
+var adForm = document.querySelector('.ad-form');
+var adFormAddress = adForm.querySelector('#address');
+var popup = map.querySelector('.popup');
 
-map.classList.remove('map--faded');
+var deactivatedForm = function (form, boolean) {
+  for (var i = 0; i < form.children.length; i++) {
+    form.children[i].disabled = boolean;
+  }
+};
+
+deactivatedForm(adForm, true);
+deactivatedForm(mapFilters, true);
+
+var renderLocation = function () {
+  return '100, 100'; // todo создать функцию подставки координат
+};
+
+var activatePage = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+
+  deactivatedForm(adForm, false);
+  deactivatedForm(mapFilters, false);
+
+  createPinFragment(createAds);
+
+  adFormAddress.value = renderLocation();
+
+  mapPinMain.removeEventListener('mouseup', activatePage);
+
+  var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+  for (var i = 0; i < mapCreatePinsAll.length; i++) {
+    onPinClick(mapCreatePinsAll[i], createAds[i]);
+  }
+};
+
+var removeChild = function () {
+  map.removeChild(popup);
+  document.removeEventListener('keydown', onPopupCloseKey);
+};
+
+var onPopupCloseKey = function (evt) {
+  if (evt.keyCode === ESC_KEY) {
+    removeChild();
+  }
+};
+
+var onPinClick = function (allPins, mapArray) {
+  allPins.addEventListener('click', function () {
+    popup = map.querySelector('.popup');
+    var titleAds = mapArray.offer.title;
+    if (popup) {
+      if (popup.querySelector('.popup__title').textContent === titleAds) {
+        return;
+      }
+      removeChild();
+    }
+
+    createCardFragment(mapArray);
+    popup = map.querySelector('.popup');
+    var popupClose = popup.querySelector('.popup__close');
+    popupClose.addEventListener('click', removeChild);
+
+    document.addEventListener('keydown', onPopupCloseKey);
+  });
+};
+
+mapPinMain.addEventListener('mouseup', activatePage);
