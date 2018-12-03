@@ -61,6 +61,16 @@ var cardTemplate = document.querySelector('#card');
 var cardTemplateItem = cardTemplate.content.querySelector('.map__card');
 var filtersContainer = document.querySelector('.map__filters-container');
 
+var mapPinMain = document.querySelector('.map__pin--main');
+var mapFilters = map.querySelector('.map__filters');
+var adForm = document.querySelector('.ad-form');
+var adFormAddress = adForm.querySelector('#address');
+var popup = map.querySelector('.popup');
+var adFormRoomNumber = adForm.querySelector('#room_number');
+var adCapacity = adForm.querySelector('#capacity');
+var adFormHouseType = adForm.querySelector('#type');
+var adFormPrice = adForm.querySelector('#price');
+
 var getRandomInt = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
@@ -205,23 +215,6 @@ var createCardFragment = function (mapArray) {
   return cardFragment;
 };
 
-var createAds = getExampleArray(numberPins);
-
-var mapPinMain = document.querySelector('.map__pin--main');
-var mapFilters = map.querySelector('.map__filters');
-var adForm = document.querySelector('.ad-form');
-var adFormAddress = adForm.querySelector('#address');
-var popup = map.querySelector('.popup');
-
-var deactivatedForm = function (form, boolean) {
-  for (var i = 0; i < form.children.length; i++) {
-    form.children[i].disabled = boolean;
-  }
-};
-
-deactivatedForm(adForm, true);
-deactivatedForm(mapFilters, true);
-
 var renderLocation = function () {
   return '100, 100'; // todo создать функцию подставки координат
 };
@@ -232,6 +225,7 @@ var activatePage = function () {
 
   deactivatedForm(adForm, false);
   deactivatedForm(mapFilters, false);
+  setPriceValue();
 
   createPinFragment(createAds);
 
@@ -277,4 +271,74 @@ var onPinClick = function (allPins, mapArray) {
   });
 };
 
+var deactivatedForm = function (form, boolean) {
+  for (var i = 0; i < form.children.length; i++) {
+    form.children[i].disabled = boolean;
+  }
+};
+
+deactivatedForm(adForm, true);
+deactivatedForm(mapFilters, true);
+
+var createAds = getExampleArray(numberPins);
+
 mapPinMain.addEventListener('mouseup', activatePage);
+
+var setPriceValue = function () { // функция проверки соответствия цены и типа жилья
+  switch (adFormHouseType.value) {
+    case 'bungalo':
+      adFormPrice.min = 0;
+      adFormPrice.placeholder = 0;
+      break;
+    case 'flat':
+      adFormPrice.min = 1000;
+      adFormPrice.placeholder = 1000;
+      break;
+    case 'house':
+      adFormPrice.min = 5000;
+      adFormPrice.placeholder = 5000;
+      break;
+    case 'palace':
+      adFormPrice.min = 10000;
+      adFormPrice.placeholder = 10000;
+      break;
+  }
+  checkPriceValue();
+};
+
+var checkPriceValue = function () { // функция для вывода сообщения об ошибке в разделе "цена"
+  if (adFormPrice.validity.valueMissing) {
+    adFormPrice.setCustomValidity('Укажите цену за ночь.');
+  } else if (adFormPrice.validity.rangeUnderflow) {
+    adFormPrice.setCustomValidity('Цена за ночь должна быть больше или равна ' + adFormPrice.min + '.');
+  } else if (adFormPrice.validity.rangeOverflow) {
+    adFormPrice.setCustomValidity('Цена за ночь должна быть меньше или равна ' + adFormPrice.max + '.');
+  } else {
+    adFormPrice.setCustomValidity('');
+  }
+};
+
+adFormRoomNumber.addEventListener('change', function () { // функция соответствия гостям и комнатам
+  var currentVal = adFormRoomNumber.value;
+  if (currentVal > adCapacity.children.length) {
+    for (var i = 0; i < adCapacity.children.length; i++) {
+      adCapacity.children[i].disabled = true;
+    }
+    adCapacity.children[adCapacity.children.length - 1].disabled = false;
+    adCapacity.children[adCapacity.children.length - 1].selected = true;
+  } else {
+    for (var j = 0; j < adCapacity.children.length; j++) {
+      if (j < currentVal) {
+        adCapacity.children[j].disabled = false;
+      } else {
+        adCapacity.children[j].disabled = true;
+      }
+    }
+    adCapacity.children[0].selected = true;
+  }
+});
+
+adForm.onchange = function (evt) { // функция синхронизации значений отъезда и выезда
+  this.timein.value = evt.target.value;
+  this.timeout.value = evt.target.value;
+};
