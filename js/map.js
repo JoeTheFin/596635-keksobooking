@@ -239,6 +239,7 @@ var activatePage = function () {
 
   adFormSubmit.addEventListener('click', function () { // валидация при отправке формы
     checkTitleValue();
+    setPriceValue();
     checkPriceValue();
   });
 
