@@ -72,6 +72,7 @@ var adCapacity = adForm.querySelector('#capacity');
 var adFormHouseType = adForm.querySelector('#type');
 var adFormPrice = adForm.querySelector('#price');
 var adFormTimeIn = adForm.querySelector('#timein');
+var adFormTimeOut = adForm.querySelector('#timeout');
 var adFormSubmit = adForm.querySelector('.ad-form__submit');
 
 var getRandomInt = function (min, max) {
@@ -237,9 +238,11 @@ var activatePage = function () {
   adFormHouseType.addEventListener('change', setPriceValue);
   adFormPrice.addEventListener('input', checkPriceValue);
 
+  adFormTimeIn.addEventListener('change', setTimeInOut);
+  adFormTimeOut.addEventListener('change', setTimeInOut);
+
   adFormSubmit.addEventListener('click', function () { // валидация при отправке формы
     checkTitleValue();
-    setPriceValue();
     checkPriceValue();
   });
 
@@ -365,9 +368,10 @@ adFormRoomNumber.addEventListener('change', function () { // функция со
   }
 });
 
-adFormTimeIn.addEventListener('click', function () {
-  adForm.onchange = function (evt) { // функция синхронизации значений отъезда и выезда
-    this.timein.value = evt.target.value;
-    this.timeout.value = evt.target.value;
-  };
-});
+var setTimeInOut = function (evt) {
+  if (evt.target === adFormTimeIn) {
+    adFormTimeOut.value = adFormTimeIn.value;
+  } else {
+    adFormTimeIn.value = adFormTimeOut.value;
+  }
+};
