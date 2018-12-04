@@ -61,6 +61,20 @@ var cardTemplate = document.querySelector('#card');
 var cardTemplateItem = cardTemplate.content.querySelector('.map__card');
 var filtersContainer = document.querySelector('.map__filters-container');
 
+var popup = map.querySelector('.popup');
+var mapPinMain = document.querySelector('.map__pin--main');
+var mapFilters = map.querySelector('.map__filters');
+var adForm = document.querySelector('.ad-form');
+var adFormAddress = adForm.querySelector('#address');
+var adFormRoomNumber = adForm.querySelector('#room_number');
+var adFormTitle = adForm.querySelector('#title');
+var adCapacity = adForm.querySelector('#capacity');
+var adFormHouseType = adForm.querySelector('#type');
+var adFormPrice = adForm.querySelector('#price');
+var adFormTimeIn = adForm.querySelector('#timein');
+var adFormTimeOut = adForm.querySelector('#timeout');
+var adFormSubmit = adForm.querySelector('.ad-form__submit');
+
 var getRandomInt = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
@@ -205,23 +219,6 @@ var createCardFragment = function (mapArray) {
   return cardFragment;
 };
 
-var createAds = getExampleArray(numberPins);
-
-var mapPinMain = document.querySelector('.map__pin--main');
-var mapFilters = map.querySelector('.map__filters');
-var adForm = document.querySelector('.ad-form');
-var adFormAddress = adForm.querySelector('#address');
-var popup = map.querySelector('.popup');
-
-var deactivatedForm = function (form, boolean) {
-  for (var i = 0; i < form.children.length; i++) {
-    form.children[i].disabled = boolean;
-  }
-};
-
-deactivatedForm(adForm, true);
-deactivatedForm(mapFilters, true);
-
 var renderLocation = function () {
   return '100, 100'; // todo создать функцию подставки координат
 };
@@ -234,6 +231,20 @@ var activatePage = function () {
   deactivatedForm(mapFilters, false);
 
   createPinFragment(createAds);
+
+  adFormTitle.addEventListener('change', checkTitleValue);
+  adFormTitle.addEventListener('input', checkTitleValue);
+
+  adFormHouseType.addEventListener('change', setPriceValue);
+  adFormPrice.addEventListener('input', checkPriceValue);
+
+  adFormTimeIn.addEventListener('change', setTimeInOut);
+  adFormTimeOut.addEventListener('change', setTimeInOut);
+
+  adFormSubmit.addEventListener('click', function () { // валидация при отправке формы
+    checkTitleValue();
+    checkPriceValue();
+  });
 
   adFormAddress.value = renderLocation();
 
@@ -277,4 +288,90 @@ var onPinClick = function (allPins, mapArray) {
   });
 };
 
+var deactivatedForm = function (form, boolean) {
+  for (var i = 0; i < form.children.length; i++) {
+    form.children[i].disabled = boolean;
+  }
+};
+
+deactivatedForm(adForm, true);
+deactivatedForm(mapFilters, true);
+
+var createAds = getExampleArray(numberPins);
+
 mapPinMain.addEventListener('mouseup', activatePage);
+
+var checkTitleValue = function () { // функция проверки длины заголовка и сообщения об ошибке
+  if (adFormTitle.validity.valueMissing) {
+    var adFormErrorMessage = 'Добавьте заголовок объявления.';
+  } else if (adFormTitle.validity.tooShort) {
+    adFormErrorMessage = 'Минимальная длина — 30 символов';
+  } else if (adFormTitle.validity.tooLong) {
+    adFormErrorMessage = 'Максимальная длина — 100 символов';
+  } else {
+    adFormErrorMessage = '';
+  }
+
+  adFormTitle.setCustomValidity(adFormErrorMessage);
+};
+
+var setPriceValue = function () { // функция проверки соответствия цены и типа жилья
+  switch (adFormHouseType.value) {
+    case 'bungalo':
+      var minPrice = 0;
+      break;
+    case 'flat':
+      minPrice = 1000;
+      break;
+    case 'house':
+      minPrice = 5000;
+      break;
+    case 'palace':
+      minPrice = 10000;
+      break;
+  }
+  adFormPrice.min = minPrice;
+  adFormPrice.placeholder = minPrice;
+  checkPriceValue();
+};
+
+var checkPriceValue = function () { // функция для вывода сообщения об ошибке в разделе "цена"
+  if (adFormPrice.validity.valueMissing) {
+    var adFormErrorMessage = 'Укажите цену за ночь.';
+  } else if (adFormPrice.validity.rangeUnderflow) {
+    adFormErrorMessage = 'Цена за ночь должна быть больше или равна ' + adFormPrice.min + '.';
+  } else if (adFormPrice.validity.rangeOverflow) {
+    adFormErrorMessage = 'Цена за ночь должна быть меньше или равна ' + adFormPrice.max + '.';
+  } else {
+    adFormErrorMessage = '';
+  }
+  adFormPrice.setCustomValidity(adFormErrorMessage);
+};
+
+adFormRoomNumber.addEventListener('change', function () { // функция соответствия гостям и комнатам
+  var currentVal = adFormRoomNumber.value;
+  if (currentVal > adCapacity.children.length) {
+    for (var i = 0; i < adCapacity.children.length; i++) {
+      adCapacity.children[i].disabled = true;
+    }
+    adCapacity.children[adCapacity.children.length - 1].disabled = false;
+    adCapacity.children[adCapacity.children.length - 1].selected = true;
+  } else {
+    for (var j = 0; j < adCapacity.children.length; j++) {
+      if (j < currentVal) {
+        adCapacity.children[j].disabled = false;
+      } else {
+        adCapacity.children[j].disabled = true;
+      }
+    }
+    adCapacity.children[0].selected = true;
+  }
+});
+
+var setTimeInOut = function (evt) {
+  if (evt.target === adFormTimeIn) {
+    adFormTimeOut.value = adFormTimeIn.value;
+  } else {
+    adFormTimeIn.value = adFormTimeOut.value;
+  }
+};
