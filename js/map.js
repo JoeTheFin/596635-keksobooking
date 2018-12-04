@@ -61,15 +61,18 @@ var cardTemplate = document.querySelector('#card');
 var cardTemplateItem = cardTemplate.content.querySelector('.map__card');
 var filtersContainer = document.querySelector('.map__filters-container');
 
+var popup = map.querySelector('.popup');
 var mapPinMain = document.querySelector('.map__pin--main');
 var mapFilters = map.querySelector('.map__filters');
 var adForm = document.querySelector('.ad-form');
 var adFormAddress = adForm.querySelector('#address');
-var popup = map.querySelector('.popup');
 var adFormRoomNumber = adForm.querySelector('#room_number');
+var adFormTitle = adForm.querySelector('#title');
 var adCapacity = adForm.querySelector('#capacity');
 var adFormHouseType = adForm.querySelector('#type');
 var adFormPrice = adForm.querySelector('#price');
+var adFormTimeIn = adForm.querySelector('#timein');
+var adFormSubmit = adForm.querySelector('.ad-form__submit');
 
 var getRandomInt = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -225,9 +228,19 @@ var activatePage = function () {
 
   deactivatedForm(adForm, false);
   deactivatedForm(mapFilters, false);
-  setPriceValue();
 
   createPinFragment(createAds);
+
+  adFormTitle.addEventListener('change', checkTitleValue);
+  adFormTitle.addEventListener('input', checkTitleValue);
+
+  adFormHouseType.addEventListener('change', setPriceValue);
+  adFormPrice.addEventListener('input', checkPriceValue);
+
+  adFormSubmit.addEventListener('click', function () { // валидация при отправке формы
+    checkTitleValue();
+    checkPriceValue();
+  });
 
   adFormAddress.value = renderLocation();
 
@@ -284,38 +297,51 @@ var createAds = getExampleArray(numberPins);
 
 mapPinMain.addEventListener('mouseup', activatePage);
 
+var checkTitleValue = function () { // функция проверки длины заголовка и сообщения об ошибке
+  if (adFormTitle.validity.valueMissing) {
+    var adFormErrorMessage = 'Добавьте заголовок объявления.';
+  } else if (adFormTitle.validity.tooShort) {
+    adFormErrorMessage = 'Минимальная длина — 30 символов';
+  } else if (adFormTitle.validity.tooLong) {
+    adFormErrorMessage = 'Максимальная длина — 100 символов';
+  } else {
+    adFormErrorMessage = '';
+  }
+
+  adFormTitle.setCustomValidity(adFormErrorMessage);
+};
+
 var setPriceValue = function () { // функция проверки соответствия цены и типа жилья
   switch (adFormHouseType.value) {
     case 'bungalo':
-      adFormPrice.min = 0;
-      adFormPrice.placeholder = 0;
+      var minPrice = 0;
       break;
     case 'flat':
-      adFormPrice.min = 1000;
-      adFormPrice.placeholder = 1000;
+      minPrice = 1000;
       break;
     case 'house':
-      adFormPrice.min = 5000;
-      adFormPrice.placeholder = 5000;
+      minPrice = 5000;
       break;
     case 'palace':
-      adFormPrice.min = 10000;
-      adFormPrice.placeholder = 10000;
+      minPrice = 10000;
       break;
   }
+  adFormPrice.min = minPrice;
+  adFormPrice.placeholder = minPrice;
   checkPriceValue();
 };
 
 var checkPriceValue = function () { // функция для вывода сообщения об ошибке в разделе "цена"
   if (adFormPrice.validity.valueMissing) {
-    adFormPrice.setCustomValidity('Укажите цену за ночь.');
+    var adFormErrorMessage = 'Укажите цену за ночь.';
   } else if (adFormPrice.validity.rangeUnderflow) {
-    adFormPrice.setCustomValidity('Цена за ночь должна быть больше или равна ' + adFormPrice.min + '.');
+    adFormErrorMessage = 'Цена за ночь должна быть больше или равна ' + adFormPrice.min + '.';
   } else if (adFormPrice.validity.rangeOverflow) {
-    adFormPrice.setCustomValidity('Цена за ночь должна быть меньше или равна ' + adFormPrice.max + '.');
+    adFormErrorMessage = 'Цена за ночь должна быть меньше или равна ' + adFormPrice.max + '.';
   } else {
-    adFormPrice.setCustomValidity('');
+    adFormErrorMessage = '';
   }
+  adFormPrice.setCustomValidity(adFormErrorMessage);
 };
 
 adFormRoomNumber.addEventListener('change', function () { // функция соответствия гостям и комнатам
@@ -338,7 +364,9 @@ adFormRoomNumber.addEventListener('change', function () { // функция со
   }
 });
 
-adForm.onchange = function (evt) { // функция синхронизации значений отъезда и выезда
-  this.timein.value = evt.target.value;
-  this.timeout.value = evt.target.value;
-};
+adFormTimeIn.addEventListener('click', function () {
+  adForm.onchange = function (evt) { // функция синхронизации значений отъезда и выезда
+    this.timein.value = evt.target.value;
+    this.timeout.value = evt.target.value;
+  };
+});
