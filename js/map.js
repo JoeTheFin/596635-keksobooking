@@ -47,6 +47,8 @@ var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
 var MIN_LOCATION_Y = 130;
 var MAX_LOCATION_Y = 630;
+var MIN_LOCATION_X = 0;
+var MAX_LOCATION_X = 1150;
 var PIN_WIDTH = 65;
 var PIN_HEIGHT = 65;
 var ESC_KEY = 27;
@@ -379,7 +381,9 @@ var createAds = getExampleArray(numberPins);
 
 mapPinMain.addEventListener('mousedown', function (event) {
   event.preventDefault();
-  activatePage();
+  if (map.classList.contains('map--faded')) { // проверка если карта имеет этот класс
+    activatePage();
+  }
 
   var startCoords = {
     x: event.clientX,
@@ -400,11 +404,18 @@ mapPinMain.addEventListener('mousedown', function (event) {
     };
 
     var mapPinMainY = Number.parseInt(mapPinMain.style.top, [10]);
+    var mapPinMainX = Number.parseInt(mapPinMain.style.left, [10]);
 
     if (mapPinMainY > MAX_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT) {
       mapPinMain.style.top = MAX_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT + 'px';
     } else if (mapPinMainY < MIN_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT) {
       mapPinMain.style.top = MIN_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT + 'px';
+    }
+
+    if (mapPinMainX > MAX_LOCATION_X) {
+      mapPinMain.style.left = MAX_LOCATION_X - MARKER_HEIGHT + 'px';
+    } else if (mapPinMainX < MIN_LOCATION_X) {
+      mapPinMain.style.left = MIN_LOCATION_X + 'px';
     }
 
     mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
