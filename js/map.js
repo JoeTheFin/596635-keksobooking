@@ -45,11 +45,12 @@ var MIN_GUESTS = 1;
 var MAX_GUESTS = 10;
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
-var MIN_LOCATION = 130;
-var MAX_LOCATION = 630;
-var PIN_WIDTH = 40;
-var PIN_HEIGHT = 40;
+var MIN_LOCATION_Y = 130;
+var MAX_LOCATION_Y = 630;
+var PIN_WIDTH = 65;
+var PIN_HEIGHT = 65;
 var ESC_KEY = 27;
+var MARKER_HEIGHT = 15;
 
 var numberPins = 8;
 
@@ -91,8 +92,8 @@ var createArrayFromRandomParts = function (arr) {
 var getExampleArray = function (number) {
   var array = [];
   for (var i = 0; i < number; i++) {
-    var locationX = getRandomInt(MIN_LOCATION, MAX_LOCATION);
-    var locationY = getRandomInt(MIN_LOCATION, MAX_LOCATION);
+    var locationX = getRandomInt(MIN_LOCATION_Y, MAX_LOCATION_Y);
+    var locationY = getRandomInt(MIN_LOCATION_Y, MAX_LOCATION_Y);
     array[i] = {
       author: {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
@@ -219,8 +220,12 @@ var createCardFragment = function (mapArray) {
   return cardFragment;
 };
 
-var renderLocation = function () {
-  return '100, 100'; // todo создать функцию подставки координат
+var renderLocation = function (pin, width, height) {
+  var pinLeftCoordinate = Number.parseInt(pin.style.left, [10]);
+  var pinTopCoordinate = Number.parseInt(pin.style.top, [10]);
+  var pinCoordinates = (pinLeftCoordinate + Math.floor(width)) + ', ' + (pinTopCoordinate + Math.floor(height));
+
+  return pinCoordinates;
 };
 
 var activatePage = function () {
@@ -246,9 +251,7 @@ var activatePage = function () {
     checkPriceValue();
   });
 
-  adFormAddress.value = renderLocation();
-
-  mapPinMain.removeEventListener('mouseup', activatePage);
+  adFormAddress.value = renderLocation(mapPinMain, PIN_WIDTH / 2, (PIN_HEIGHT + MARKER_HEIGHT));
 
   var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
 
@@ -297,11 +300,7 @@ var deactivatedForm = function (form, boolean) {
 deactivatedForm(adForm, true);
 deactivatedForm(mapFilters, true);
 
-var createAds = getExampleArray(numberPins);
-
-mapPinMain.addEventListener('mouseup', activatePage);
-
-var checkTitleValue = function () { // функция проверки длины заголовка и сообщения об ошибке
+var checkTitleValue = function () {
   if (adFormTitle.validity.valueMissing) {
     var adFormErrorMessage = 'Добавьте заголовок объявления.';
   } else if (adFormTitle.validity.tooShort) {
@@ -315,7 +314,7 @@ var checkTitleValue = function () { // функция проверки длин�
   adFormTitle.setCustomValidity(adFormErrorMessage);
 };
 
-var setPriceValue = function () { // функция проверки соответствия цены и типа жилья
+var setPriceValue = function () {
   switch (adFormHouseType.value) {
     case 'bungalo':
       var minPrice = 0;
@@ -331,11 +330,11 @@ var setPriceValue = function () { // функция проверки соотв�
       break;
   }
   adFormPrice.min = minPrice;
-  adFormPrice.placeholder = minPrice;
+  adFormPrice.placeholder = 'от ' + minPrice;
   checkPriceValue();
 };
 
-var checkPriceValue = function () { // функция для вывода сообщения об ошибке в разделе "цена"
+var checkPriceValue = function () {
   if (adFormPrice.validity.valueMissing) {
     var adFormErrorMessage = 'Укажите цену за ночь.';
   } else if (adFormPrice.validity.rangeUnderflow) {
@@ -348,7 +347,7 @@ var checkPriceValue = function () { // функция для вывода соо
   adFormPrice.setCustomValidity(adFormErrorMessage);
 };
 
-adFormRoomNumber.addEventListener('change', function () { // функция соответствия гостям и комнатам
+adFormRoomNumber.addEventListener('change', function () {
   var currentVal = adFormRoomNumber.value;
   if (currentVal > adCapacity.children.length) {
     for (var i = 0; i < adCapacity.children.length; i++) {
@@ -375,3 +374,53 @@ var setTimeInOut = function (evt) {
     adFormTimeIn.value = adFormTimeOut.value;
   }
 };
+
+var createAds = getExampleArray(numberPins);
+
+mapPinMain.addEventListener('mousedown', function (event) {
+  event.preventDefault();
+  activatePage();
+
+  var startCoords = {
+    x: event.clientX,
+    y: event.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var mapPinMainY = Number.parseInt(mapPinMain.style.top, [10]);
+
+    if (mapPinMainY > MAX_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT) {
+      mapPinMain.style.top = MAX_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT + 'px';
+    } else if (mapPinMainY < MIN_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT) {
+      mapPinMain.style.top = MIN_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT + 'px';
+    }
+
+    mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
+    mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    adFormAddress.value = renderLocation(mapPinMain, PIN_WIDTH / 2, (PIN_HEIGHT + MARKER_HEIGHT));
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
