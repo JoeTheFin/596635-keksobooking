@@ -47,8 +47,6 @@ var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
 var MIN_LOCATION_Y = 130;
 var MAX_LOCATION_Y = 630;
-var MIN_LOCATION_X = 0;
-var MAX_LOCATION_X = 1150;
 var PIN_WIDTH = 65;
 var PIN_HEIGHT = 65;
 var ESC_KEY = 27;
@@ -412,10 +410,10 @@ mapPinMain.addEventListener('mousedown', function (event) {
       mapPinMain.style.top = MIN_LOCATION_Y - PIN_HEIGHT - MARKER_HEIGHT + 'px';
     }
 
-    if (mapPinMainX > MAX_LOCATION_X) {
-      mapPinMain.style.left = MAX_LOCATION_X - MARKER_HEIGHT + 'px';
-    } else if (mapPinMainX < MIN_LOCATION_X) {
-      mapPinMain.style.left = MIN_LOCATION_X + 'px';
+    if (mapPinMainX > map.offsetWidth) {
+      mapPinMain.style.left = map.offsetWidth - PIN_WIDTH + 'px';
+    } else if (mapPinMainX < 0) {
+      mapPinMain.style.left = 0 + 'px';
     }
 
     mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
