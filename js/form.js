@@ -4,7 +4,7 @@
   var adForm = document.querySelector('.ad-form');
   var adFormRoomNumber = adForm.querySelector('#room_number');
   var adFormTitle = adForm.querySelector('#title');
-  var adCapacity = adForm.querySelector('#capacity');
+  var adFormCapacity = adForm.querySelector('#capacity');
   var adFormHouseType = adForm.querySelector('#type');
   var adFormPrice = adForm.querySelector('#price');
   var adFormTimeIn = adForm.querySelector('#timein');
@@ -70,21 +70,21 @@
     checkCapacity: function () {
       adFormRoomNumber.addEventListener('change', function () {
         var currentVal = adFormRoomNumber.value;
-        if (currentVal > adCapacity.children.length) {
-          for (var i = 0; i < adCapacity.children.length; i++) {
-            adCapacity.children[i].disabled = true;
+        if (currentVal > adFormCapacity.children.length) {
+          for (var i = 0; i < adFormCapacity.children.length; i++) {
+            adFormCapacity.children[i].disabled = true;
           }
-          adCapacity.children[adCapacity.children.length - 1].disabled = false;
-          adCapacity.children[adCapacity.children.length - 1].selected = true;
+          adFormCapacity.children[adFormCapacity.children.length - 1].disabled = false;
+          adFormCapacity.children[adFormCapacity.children.length - 1].selected = true;
         } else {
-          for (var j = 0; j < adCapacity.children.length; j++) {
+          for (var j = 0; j < adFormCapacity.children.length; j++) {
             if (j < currentVal) {
-              adCapacity.children[j].disabled = false;
+              adFormCapacity.children[j].disabled = false;
             } else {
-              adCapacity.children[j].disabled = true;
+              adFormCapacity.children[j].disabled = true;
             }
           }
-          adCapacity.children[0].selected = true;
+          adFormCapacity.children[0].selected = true;
         }
       });
     }

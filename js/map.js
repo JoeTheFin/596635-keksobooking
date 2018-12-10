@@ -72,6 +72,7 @@
     adFormTimeOut.addEventListener('change', window.form.setTimeInOut);
 
     adFormRoomNumber.addEventListener('change', window.form.checkCapacity);
+    adFormRoomNumber.addEventListener('input', window.form.checkCapacity);
 
     adFormSubmit.addEventListener('click', function () {
       window.form.checkTitleValue();
