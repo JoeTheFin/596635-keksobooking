@@ -102,7 +102,7 @@
       }
       adFormPrice.min = minPrice;
       adFormPrice.placeholder = 'от ' + minPrice;
-      this.checkPriceValue();
+      window.form.checkPriceValue();
     },
     checkPriceValue: function () {
       if (adFormPrice.validity.valueMissing) {

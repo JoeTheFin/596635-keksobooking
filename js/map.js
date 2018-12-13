@@ -33,6 +33,19 @@
     window.util.isEscEvent(evt, removeChild);
   };
 
+  var resetMap = function () {
+    if (popup) {
+      removeChild();
+    }
+    map.classList.add('map--faded');
+    var mapPinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0; i < mapPinsAll.length; i++) {
+      divMapPins.removeChild(mapPinsAll[i]);
+    }
+    mapPinMain.style.left = '570px';
+    mapPinMain.style.top = '375px';
+  };
+
   var onPinClick = function (allPins, mapArray) {
     allPins.addEventListener('click', function () {
       popup = map.querySelector('.popup');
@@ -102,22 +115,10 @@
 
     adFormSubmit.addEventListener('click', function () {
       window.form.submit();
+      resetMap();
     });
 
-    adFormReset.addEventListener('click', function () {
-      if (popup) {
-        removeChild();
-      }
-      if (map.classList.contains('map--faded')) {
-        map.classList.add('map--faded');
-      }
-      var mapPinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-      for (var i = 0; i < mapPinsAll.length; i++) {
-        divMapPins.removeChild(mapPinsAll[i]);
-      }
-      mapPinMain.style.left = '570px';
-      mapPinMain.style.top = '375px';
-    });
+    adFormReset.addEventListener('click', resetMap);
   };
 
   mapPinMain.addEventListener('mousedown', function (event) {
