@@ -32,6 +32,8 @@
     main.insertBefore(successItem, main.firstChild);
     document.addEventListener('click', window.form.removeMessage);
     document.addEventListener('keydown', window.form.onMessageEscPress);
+    adFormSubmit.disabled = false;
+    window.map.resetMap();
   };
 
   var errorHandler = function (errorMessage) {
@@ -40,6 +42,7 @@
     errorItemButton.addEventListener('click', postFormAgain);
     document.addEventListener('click', window.form.removeMessage);
     document.addEventListener('keydown', window.form.onMessageEscPress);
+    adFormSubmit.disabled = false;
   };
 
   window.form = {
@@ -62,9 +65,11 @@
     submit: function () {
       window.form.checkTitleValue();
       window.form.checkPriceValue();
+      window.form.checkCapacity();
       if (adForm.checkValidity()) {
         adFormSubmit.disabled = true;
         window.backend.post(new FormData(adForm), successHandler, errorHandler);
+        adForm.reset();
       }
     },
     deactivatedForm: function (form, boolean) {

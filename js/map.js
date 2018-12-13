@@ -117,10 +117,9 @@
 
     adFormSubmit.addEventListener('click', function () {
       window.form.submit();
-      resetMap();
     });
-
     adFormReset.addEventListener('click', resetMap);
+
   };
 
   mapPinMain.addEventListener('mousedown', function (event) {
@@ -179,4 +178,8 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
+
+  window.map = {
+    resetMap: resetMap
+  };
 })();
