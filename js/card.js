@@ -33,17 +33,23 @@
           break;
       }
 
-      cardElement.querySelector('.popup__text--capacity').textContent = mapArray.offer.rooms + ' комнаты для ' + mapArray.offer.guests + ' гостей';
+      cardElement.querySelector('.popup__text--capacity').textContent =
+      mapArray.offer.rooms + ' комнаты для ' + mapArray.offer.guests + ' гостей';
 
-      cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + mapArray.offer.checkin + ', выезд до ' + mapArray.offer.checkout;
+      cardElement.querySelector('.popup__text--time').textContent =
+      'Заезд после ' + mapArray.offer.checkin + ', выезд до ' + mapArray.offer.checkout;
 
       var featuresCard = cardElement.querySelector('.popup__features');
       featuresCard.innerHTML = '';
       var fragmentFeaturesCard = document.createDocumentFragment();
       for (var f = 0; f < mapArray.offer.features.length; f++) {
-        var featuresElement = document.createElement('li');
-        featuresElement.classList = 'popup__feature popup__feature--' + mapArray.offer.features[f]; // без указания класса, он не отрисовывает преимущества на карте
-        fragmentFeaturesCard.appendChild(featuresElement);
+        if (mapArray.offer.features.length.length === 0) {
+          featuresCard.removeChild(fragmentFeaturesCard);
+        } else {
+          var featuresElement = document.createElement('li');
+          featuresElement.classList = 'popup__feature popup__feature--' + mapArray.offer.features[f];
+          fragmentFeaturesCard.appendChild(featuresElement);
+        }
       }
       featuresCard.appendChild(fragmentFeaturesCard);
 
@@ -53,11 +59,15 @@
       photosCard.innerHTML = '';
       var fragmentPhotosCard = document.createDocumentFragment();
       for (var p = 0; p < mapArray.offer.photos.length; p++) {
-        var photosElement = document.createElement('img');
-        photosElement.src = mapArray.offer.photos[p];
-        photosElement.width = 45;
-        photosElement.height = 40;
-        fragmentPhotosCard.appendChild(photosElement);
+        if (mapArray.offer.photos.length === 0) {
+          photosCard.removeChild(fragmentPhotosCard);
+        } else {
+          var photosElement = document.createElement('img');
+          photosElement.src = mapArray.offer.photos[p];
+          photosElement.width = 45;
+          photosElement.height = 40;
+          fragmentPhotosCard.appendChild(photosElement);
+        }
       }
       photosCard.appendChild(fragmentPhotosCard);
 
