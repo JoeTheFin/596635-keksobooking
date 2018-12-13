@@ -44,6 +44,8 @@
     }
     mapPinMain.style.left = '570px';
     mapPinMain.style.top = '375px';
+    adForm.classList.add('ad-form--disabled');
+    adForm.reset();
   };
 
   var onPinClick = function (allPins, mapArray) {
