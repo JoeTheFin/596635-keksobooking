@@ -1,7 +1,8 @@
 'use strict';
 
 (function () {
-  var map = document.querySelector('.map');
+  var main = document.querySelector('main');
+  var map = main.querySelector('.map');
   var divMapPins = document.querySelector('.map__pins');
   var mapPinMain = document.querySelector('.map__pin--main');
   var mapFilters = map.querySelector('.map__filters');
@@ -16,6 +17,12 @@
   var adFormTimeIn = adForm.querySelector('#timein');
   var adFormTimeOut = adForm.querySelector('#timeout');
   var adFormSubmit = adForm.querySelector('.ad-form__submit');
+  var adFormReset = adForm.querySelector('.ad-form__reset');
+
+  var errorTemplate = document.querySelector('#error');
+  var errorItem = errorTemplate.content.querySelector('.error');
+  var errorItemText = errorItem.querySelector('.error__message');
+  var errorItemButton = errorItem.querySelector('.error__button');
 
   var removeChild = function () {
     map.removeChild(popup);
@@ -55,11 +62,25 @@
     }
   };
 
+  var errorHandler = function (errorMessage) {
+    main.insertBefore(errorItem, main.firstChild);
+    errorItemText.textContent = errorMessage;
+    errorItemButton.addEventListener('click', getPinsAgain);
+    document.addEventListener('click', window.form.removeMessage);
+    document.addEventListener('keydown', window.form.onMessageEscPress);
+  };
+
+  var getPinsAgain = function (event) {
+    event.stopPropagation();
+    errorItemButton.removeEventListener('click', getPinsAgain);
+    window.backend.get(successHandler, errorHandler);
+  };
+
   window.form.deactivatedForm(adForm, true);
   window.form.deactivatedForm(mapFilters, true);
 
   var activatePage = function () {
-    window.backend.get(successHandler);
+    window.backend.get(successHandler, errorHandler);
 
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
@@ -80,8 +101,22 @@
     adFormRoomNumber.addEventListener('input', window.form.checkCapacity);
 
     adFormSubmit.addEventListener('click', function () {
-      window.form.checkTitleValue();
-      window.form.checkPriceValue();
+      window.form.submit();
+    });
+
+    adFormReset.addEventListener('click', function () {
+      if (popup) {
+        removeChild();
+      }
+      if (map.classList.contains('map--faded')) {
+        map.classList.add('map--faded');
+      }
+      var mapPinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+      for (var i = 0; i < mapPinsAll.length; i++) {
+        divMapPins.removeChild(mapPinsAll[i]);
+      }
+      mapPinMain.style.left = '570px';
+      mapPinMain.style.top = '375px';
     });
   };
 

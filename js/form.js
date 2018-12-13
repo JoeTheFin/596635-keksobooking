@@ -1,7 +1,11 @@
 'use strict';
 
 (function () {
-  var adForm = document.querySelector('.ad-form');
+  var main = document.querySelector('main');
+  var map = main.querySelector('.map');
+  var mapOverlay = map.querySelector('.map__overlay');
+
+  var adForm = main.querySelector('.ad-form');
   var adFormRoomNumber = adForm.querySelector('#room_number');
   var adFormTitle = adForm.querySelector('#title');
   var adFormCapacity = adForm.querySelector('#capacity');
@@ -9,8 +13,60 @@
   var adFormPrice = adForm.querySelector('#price');
   var adFormTimeIn = adForm.querySelector('#timein');
   var adFormTimeOut = adForm.querySelector('#timeout');
+  var adFormSubmit = adForm.querySelector('.ad-form__submit');
+
+  var successTemplate = document.querySelector('#success');
+  var successItem = successTemplate.content.querySelector('.success');
+  var errorTemplate = document.querySelector('#error');
+  var errorItem = errorTemplate.content.querySelector('.error');
+  var errorItemText = errorItem.querySelector('.error__message');
+  var errorItemButton = errorItem.querySelector('.error__button');
+
+  var postFormAgain = function (evt) {
+    evt.stopPropagation();
+    errorItemButton.removeEventListener('click', postFormAgain);
+    window.backend.post(new FormData(adForm), successHandler, errorHandler);
+  };
+
+  var successHandler = function () {
+    main.insertBefore(successItem, main.firstChild);
+    document.addEventListener('click', window.form.removeMessage);
+    document.addEventListener('keydown', window.form.onMessageEscPress);
+  };
+
+  var errorHandler = function (errorMessage) {
+    main.insertBefore(errorItem, main.firstChild);
+    errorItemText.textContent = errorMessage;
+    errorItemButton.addEventListener('click', postFormAgain);
+    document.addEventListener('click', window.form.removeMessage);
+    document.addEventListener('keydown', window.form.onMessageEscPress);
+  };
 
   window.form = {
+    onMessageEscPress: function (evt) {
+      window.util.isEscEvent(evt, window.form.removeMessage);
+    },
+    removeMessage: function () {
+      switch (main.firstChild.classList.value) {
+        case 'success':
+          main.removeChild(main.firstChild);
+          break;
+        case 'error':
+          main.removeChild(main.firstChild);
+          break;
+      }
+      mapOverlay.addEventListener('click', window.form.removeMessage);
+      document.removeEventListener('click', window.form.removeMessage);
+      document.removeEventListener('keydown', window.form.onMessageEscPress);
+    },
+    submit: function () {
+      window.form.checkTitleValue();
+      window.form.checkPriceValue();
+      if (adForm.checkValidity()) {
+        adFormSubmit.disabled = true;
+        window.backend.post(new FormData(adForm), successHandler, errorHandler);
+      }
+    },
     deactivatedForm: function (form, boolean) {
       for (var i = 0; i < form.children.length; i++) {
         form.children[i].disabled = boolean;
