@@ -50,14 +50,7 @@
       window.util.isEscEvent(evt, window.form.removeMessage);
     },
     removeMessage: function () {
-      switch (main.firstChild.classList.value) {
-        case 'success':
-          main.removeChild(main.firstChild);
-          break;
-        case 'error':
-          main.removeChild(main.firstChild);
-          break;
-      }
+      main.removeChild(main.firstChild);
       mapOverlay.addEventListener('click', window.form.removeMessage);
       document.removeEventListener('click', window.form.removeMessage);
       document.removeEventListener('keydown', window.form.onMessageEscPress);
