@@ -7,6 +7,7 @@
     PIN_WIDTH: 65,
     PIN_HEIGHT: 65,
     ESC_KEY: 27,
+    ENTER_KEY: 13,
     MARKER_HEIGHT: 15,
     renderLocation: function (pin, width, height) {
       var pinLeftCoordinate = Number.parseInt(pin.style.left, [10]);
@@ -15,7 +16,12 @@
       return pinCoordinates;
     },
     isEscEvent: function (evt, action) {
-      if (evt.keyCode === this.ESC_KEY) {
+      if (evt.keyCode === window.util.ESC_KEY) {
+        action();
+      }
+    },
+    isEnterEvent: function (evt, action) {
+      if (evt.keyCode === window.util.ENTER_KEYCODE) {
         action();
       }
     }

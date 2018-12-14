@@ -21,8 +21,10 @@
       var pinFragment = document.createDocumentFragment();
 
       for (var j = 0; j < mapArray.length; j++) {
-        var resultMap = this.renderPinElement(mapArray[j]);
-        pinFragment.appendChild(resultMap);
+        if ('offer' in mapArray[j]) {
+          var resultMap = this.renderPinElement(mapArray[j]);
+          pinFragment.appendChild(resultMap);
+        }
       }
 
       divMapPins.appendChild(pinFragment);

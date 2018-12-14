@@ -1,9 +1,8 @@
 'use strict';
 
 (function () {
-  var numberPins = 8;
-
-  var map = document.querySelector('.map');
+  var main = document.querySelector('main');
+  var map = main.querySelector('.map');
   var divMapPins = document.querySelector('.map__pins');
   var mapPinMain = document.querySelector('.map__pin--main');
   var mapFilters = map.querySelector('.map__filters');
@@ -18,8 +17,12 @@
   var adFormTimeIn = adForm.querySelector('#timein');
   var adFormTimeOut = adForm.querySelector('#timeout');
   var adFormSubmit = adForm.querySelector('.ad-form__submit');
+  var adFormReset = adForm.querySelector('.ad-form__reset');
 
-  var createAds = window.data.getExampleArray(numberPins);
+  var errorTemplate = document.querySelector('#error');
+  var errorItem = errorTemplate.content.querySelector('.error');
+  var errorItemText = errorItem.querySelector('.error__message');
+  var errorItemButton = errorItem.querySelector('.error__button');
 
   var removeChild = function () {
     map.removeChild(popup);
@@ -28,6 +31,21 @@
 
   var onPopupCloseKey = function (evt) {
     window.util.isEscEvent(evt, removeChild);
+  };
+
+  var resetMap = function () {
+    if (popup) {
+      removeChild();
+    }
+    map.classList.add('map--faded');
+    var mapPinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0; i < mapPinsAll.length; i++) {
+      divMapPins.removeChild(mapPinsAll[i]);
+    }
+    mapPinMain.style.left = '570px';
+    mapPinMain.style.top = '375px';
+    adForm.classList.add('ad-form--disabled');
+    adForm.reset();
   };
 
   var onPinClick = function (allPins, mapArray) {
@@ -50,17 +68,40 @@
     });
   };
 
+  var successHandler = function (pinsArray) {
+    window.pin.createPinFragment(pinsArray);
+
+    var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0; i < mapCreatePinsAll.length; i++) {
+      onPinClick(mapCreatePinsAll[i], pinsArray[i]);
+    }
+  };
+
+  var errorHandler = function (errorMessage) {
+    main.insertBefore(errorItem, main.firstChild);
+    errorItemText.textContent = errorMessage;
+    errorItemButton.addEventListener('click', getPinsAgain);
+    document.addEventListener('click', window.form.removeMessage);
+    document.addEventListener('keydown', window.form.onMessageEscPress);
+  };
+
+  var getPinsAgain = function (event) {
+    event.stopPropagation();
+    errorItemButton.removeEventListener('click', getPinsAgain);
+    window.backend.get(successHandler, errorHandler);
+  };
+
   window.form.deactivatedForm(adForm, true);
   window.form.deactivatedForm(mapFilters, true);
 
   var activatePage = function () {
+    window.backend.get(successHandler, errorHandler);
+
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
 
     window.form.deactivatedForm(adForm, false);
     window.form.deactivatedForm(mapFilters, false);
-
-    window.pin.createPinFragment(createAds);
 
     adFormTitle.addEventListener('change', window.form.checkTitleValue);
     adFormTitle.addEventListener('input', window.form.checkTitleValue);
@@ -72,19 +113,13 @@
     adFormTimeOut.addEventListener('change', window.form.setTimeInOut);
 
     adFormRoomNumber.addEventListener('change', window.form.checkCapacity);
+    adFormRoomNumber.addEventListener('input', window.form.checkCapacity);
 
     adFormSubmit.addEventListener('click', function () {
-      window.form.checkTitleValue();
-      window.form.checkPriceValue();
+      window.form.submit();
     });
+    adFormReset.addEventListener('click', resetMap);
 
-    adFormAddress.value = window.util.renderLocation(mapPinMain, window.util.PIN_WIDTH / 2, (window.util.PIN_HEIGHT + window.util.MARKER_HEIGHT));
-
-    var mapCreatePinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-
-    for (var i = 0; i < mapCreatePinsAll.length; i++) {
-      onPinClick(mapCreatePinsAll[i], createAds[i]);
-    }
   };
 
   mapPinMain.addEventListener('mousedown', function (event) {
@@ -143,4 +178,8 @@
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
+
+  window.map = {
+    resetMap: resetMap
+  };
 })();
