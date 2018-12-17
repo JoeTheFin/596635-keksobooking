@@ -4,6 +4,7 @@
   var main = document.querySelector('main');
   var map = main.querySelector('.map');
   var mapOverlay = map.querySelector('.map__overlay');
+  var mapFilters = map.querySelector('.map__filters');
 
   var adForm = main.querySelector('.ad-form');
   var adFormRoomNumber = adForm.querySelector('#room_number');
@@ -14,6 +15,7 @@
   var adFormTimeIn = adForm.querySelector('#timein');
   var adFormTimeOut = adForm.querySelector('#timeout');
   var adFormSubmit = adForm.querySelector('.ad-form__submit');
+  var adFormReset = adForm.querySelector('.ad-form__reset');
 
   var successTemplate = document.querySelector('#success');
   var successItem = successTemplate.content.querySelector('.success');
@@ -34,6 +36,7 @@
     document.addEventListener('keydown', window.form.onMessageEscPress);
     adFormSubmit.disabled = false;
     window.map.resetMap();
+    window.form.reset();
   };
 
   var errorHandler = function (errorMessage) {
@@ -148,6 +151,27 @@
           adFormCapacity.children[0].selected = true;
         }
       });
+    },
+    reset: function () {
+      map.classList.add('map--faded');
+      mapFilters.reset();
+      adForm.classList.add('ad-form--disabled');
+      adForm.reset();
+      window.form.deactivatedForm(mapFilters, true);
+      window.form.deactivatedForm(adForm, true);
+      window.form.setPriceValue();
+      window.form.checkCapacity();
+
+      adFormTitle.removeEventListener('change', window.form.checkTitleValue);
+      adFormTitle.removeEventListener('input', window.form.checkTitleValue);
+      adFormHouseType.removeEventListener('change', window.form.setPriceValue);
+      adFormPrice.removeEventListener('input', window.form.checkPriceValue);
+      adFormRoomNumber.removeEventListener('change', window.form.checkCapacity);
+      adFormCapacity.removeEventListener('change', window.form.checkCapacity);
+      adFormTimeIn.removeEventListener('change', window.form.setTimeInOut);
+      adFormTimeOut.removeEventListener('change', window.form.setTimeInOut);
+      adFormSubmit.removeEventListener('click', window.form.submit);
+      adFormReset.removeEventListener('click', window.form.reset);
     }
   };
 })();
