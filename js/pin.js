@@ -11,7 +11,7 @@
   var priceSelect = mapFilters.querySelector('#housing-price');
   var roomsSelect = mapFilters.querySelector('#housing-rooms');
   var guestsSelect = mapFilters.querySelector('#housing-guests');
-  var featuresCheckboxes = document.querySelectorAll('.map__checkbox');
+  var featuresSelect = mapFilters.querySelector('#housing-features');
 
   var HousingPriceValue = {
     low: {
@@ -64,9 +64,8 @@
             var filteredArray = window.map.mapArray.filter(function (item) {
               if (typeSelect.value === 'any') {
                 return true;
-              } else {
-                return item.offer.type === typeSelect.value;
               }
+              return item.offer.type === typeSelect.value;
             });
             break;
 
@@ -90,9 +89,8 @@
             filteredArray = filteredArray.filter(function (item) {
               if (roomsSelect.value === 'any') {
                 return true;
-              } else {
-                return item.offer.rooms === parseInt(roomsSelect.value, 10);
               }
+              return item.offer.rooms === parseInt(roomsSelect.value, 10);
             });
             break;
 
@@ -100,20 +98,21 @@
             filteredArray = filteredArray.filter(function (item) {
               if (guestsSelect.value === 'any') {
                 return true;
-              } else {
-                return item.offer.guests === parseInt(guestsSelect.value, 10);
               }
+              return item.offer.guests === parseInt(guestsSelect.value, 10);
             });
             break;
 
-          case featuresCheckboxes:
+          case featuresSelect:
+            var checkedInputs = featuresSelect.querySelectorAll('input:checked');
             filteredArray = filteredArray.filter(function (item) {
-              for (var f = 0; f < featuresCheckboxes.length; f++) {
-                if (featuresCheckboxes[f].checked && item.offer.features.indexOf(featuresCheckboxes[f].value) < 0) {
-                  return false;
+              var follow = 0;
+              for (var j = 0; j < checkedInputs.length; j++) {
+                if (item.offer.features.indexOf(checkedInputs[j].value) > -1) {
+                  follow++;
                 }
               }
-              return true;
+              return follow === checkedInputs.length;
             });
             break;
         }
