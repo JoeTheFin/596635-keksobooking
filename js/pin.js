@@ -15,16 +15,14 @@
 
   var HousingPriceValue = {
     low: {
-      minPrice: 0,
       maxPrice: 10000
     },
     middle: {
       minPrice: 10000,
       maxPrice: 50000
     },
-    heigh: {
-      minPrice: 50000,
-      maxPrice: Infinity
+    high: {
+      minPrice: 50000
     }
   };
 
@@ -76,12 +74,12 @@
             filteredArray = filteredArray.filter(function (item) {
               switch (priceSelect.value) {
                 case 'low':
-                  return item.offer.price <= HousingPriceValue.low.maxPrice;
+                  return item.offer.price < HousingPriceValue.low.maxPrice;
                 case 'middle':
                   return item.offer.price >= HousingPriceValue.middle.minPrice
-                  && item.offer.price <= HousingPriceValue.middle.maxPrice;
-                case 'heigh':
-                  return item.offer.price >= HousingPriceValue.heigh.minPrice;
+                  && item.offer.price < HousingPriceValue.middle.maxPrice;
+                case 'high':
+                  return item.offer.price >= HousingPriceValue.high.minPrice;
                 default:
                   return true;
               }
