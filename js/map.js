@@ -52,6 +52,7 @@
     mapPinMain.style.left = '570px';
     mapPinMain.style.top = '375px';
     adForm.classList.add('ad-form--disabled');
+    adFormReset.removeEventListener('click', resetMap);
     adForm.reset();
   };
 
@@ -59,8 +60,8 @@
     allPins.addEventListener('click', function () {
       mapOverlay.addEventListener('click', removeChild);
       var popup = map.querySelector('.popup');
+      var titleAds = pinItem.offer.title;
       if (popup) {
-        var titleAds = pinItem.offer.title;
         if (popup.querySelector('.popup__title').textContent === titleAds) {
           return;
         }
@@ -79,10 +80,9 @@
   };
 
   var successHandler = function (pinsArray) {
-    adForm.classList.remove('ad-form--disabled');
+    window.map.mapArray = pinsArray;
 
     window.pin.createPinFragment(pinsArray);
-    window.pin.filterPins(pinsArray);
 
     window.form.deactivatedForm(adForm, false);
     window.form.deactivatedForm(mapFilters, false);
@@ -102,10 +102,9 @@
     adFormRoomNumber.addEventListener('change', window.form.checkCapacity);
     adFormRoomNumber.addEventListener('input', window.form.checkCapacity);
 
-    adFormSubmit.addEventListener('click', function () {
-      window.form.submit();
-    });
+    adFormSubmit.addEventListener('click', window.form.submit);
     adFormReset.addEventListener('click', resetMap);
+    adFormReset.addEventListener('click', window.form.reset);
   };
 
   var errorHandler = function (errorMessage) {

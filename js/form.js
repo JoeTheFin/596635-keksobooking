@@ -32,11 +32,12 @@
 
   var successHandler = function () {
     main.insertBefore(successItem, main.firstChild);
+    mapFilters.removeEventListener('change', window.pin.filterPins);
     document.addEventListener('click', window.form.removeMessage);
     document.addEventListener('keydown', window.form.onMessageEscPress);
-    adFormSubmit.disabled = false;
     window.map.resetMap();
     window.form.reset();
+    adFormSubmit.disabled = false;
   };
 
   var errorHandler = function (errorMessage) {
@@ -162,12 +163,12 @@
       window.form.setPriceValue();
       window.form.checkCapacity();
 
+      mapFilters.removeEventListener('change', window.pin.filterPins);
       adFormTitle.removeEventListener('change', window.form.checkTitleValue);
       adFormTitle.removeEventListener('input', window.form.checkTitleValue);
       adFormHouseType.removeEventListener('change', window.form.setPriceValue);
       adFormPrice.removeEventListener('input', window.form.checkPriceValue);
       adFormRoomNumber.removeEventListener('change', window.form.checkCapacity);
-      adFormCapacity.removeEventListener('change', window.form.checkCapacity);
       adFormTimeIn.removeEventListener('change', window.form.setTimeInOut);
       adFormTimeOut.removeEventListener('change', window.form.setTimeInOut);
       adFormSubmit.removeEventListener('click', window.form.submit);

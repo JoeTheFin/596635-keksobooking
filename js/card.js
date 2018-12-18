@@ -11,13 +11,10 @@
       var cardElement = cardTemplateItem.cloneNode(true);
 
       cardElement.querySelector('.popup__title').textContent = mapArray.offer.title;
-
       cardElement.querySelector('.popup__text--address').textContent = mapArray.offer.address;
-
       cardElement.querySelector('.popup__text--price').textContent = mapArray.offer.price + '₽/ночь';
 
       var typeCard = cardElement.querySelector('.popup__type');
-
       switch (mapArray.offer.type) {
         case 'flat' :
           typeCard.textContent = 'Квартира';

@@ -10,8 +10,8 @@
     ENTER_KEY: 13,
     MARKER_HEIGHT: 15,
     renderLocation: function (pin, width, height) {
-      var pinLeftCoordinate = Number.parseInt(pin.style.left, [10]);
-      var pinTopCoordinate = Number.parseInt(pin.style.top, [10]);
+      var pinLeftCoordinate = parseInt(pin.style.left, 10);
+      var pinTopCoordinate = parseInt(pin.style.top, 10);
       var pinCoordinates = (pinLeftCoordinate + Math.floor(width)) + ', ' + (pinTopCoordinate + Math.floor(height));
       return pinCoordinates;
     },
