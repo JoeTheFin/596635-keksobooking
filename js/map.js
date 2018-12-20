@@ -3,7 +3,7 @@
 (function () {
   var main = document.querySelector('main');
   var map = main.querySelector('.map');
-  var divMapPins = document.querySelector('.map__pins');
+  var mapPins = document.querySelector('.map__pins');
   var mapPinMain = document.querySelector('.map__pin--main');
   var mapFilters = map.querySelector('.map__filters');
   var mapOverlay = map.querySelector('.map__overlay');
@@ -31,18 +31,18 @@
       var currentPin = map.querySelector('.map__pin--active');
       currentPin.classList.remove('map__pin--active');
       mapOverlay.removeEventListener('click', removeChild);
-      document.removeEventListener('keydown', onPopupCloseKey);
+      document.removeEventListener('keydown', popupCloseKeyHandler);
     }
   };
 
   var removePins = function () {
-    var mapPinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var mapPinsAll = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
     for (var i = 0; i < mapPinsAll.length; i++) {
-      divMapPins.removeChild(mapPinsAll[i]);
+      mapPins.removeChild(mapPinsAll[i]);
     }
   };
 
-  var onPopupCloseKey = function (evt) {
+  var popupCloseKeyHandler = function (evt) {
     window.util.isEscEvent(evt, removeChild);
   };
 
@@ -56,7 +56,7 @@
     adForm.reset();
   };
 
-  var onPinClick = function (allPins, pinItem) {
+  var pinClickHandler = function (allPins, pinItem) {
     allPins.addEventListener('click', function () {
       mapOverlay.addEventListener('click', removeChild);
       var popup = map.querySelector('.popup');
@@ -75,7 +75,7 @@
       var popupClose = popup.querySelector('.popup__close');
       popupClose.addEventListener('click', removeChild);
 
-      document.addEventListener('keydown', onPopupCloseKey);
+      document.addEventListener('keydown', popupCloseKeyHandler);
     });
   };
 
@@ -112,7 +112,7 @@
     errorItemText.textContent = errorMessage;
     errorItemButton.addEventListener('click', getPinsAgain);
     document.addEventListener('click', window.form.removeMessage);
-    document.addEventListener('keydown', window.form.onMessageEscPress);
+    document.addEventListener('keydown', window.form.messageEscPressHandler);
   };
 
   var getPinsAgain = function (event) {
@@ -139,7 +139,7 @@
       y: event.clientY
     };
 
-    var onMouseMove = function (moveEvt) {
+    var mouseMoveHandler = function (moveEvt) {
       moveEvt.preventDefault();
 
       var shift = {
@@ -172,23 +172,23 @@
 
     };
 
-    var onMouseUp = function (upEvt) {
+    var mouseUpHandler = function (upEvt) {
       upEvt.preventDefault();
       adFormAddress.value = window.util.renderLocation(mapPinMain, window.util.PIN_WIDTH / 2, (window.util.PIN_HEIGHT + window.util.MARKER_HEIGHT));
 
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
 
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
   });
 
   window.map = {
     resetMap: resetMap,
     removeChild: removeChild,
     removePins: removePins,
-    onPinClick: onPinClick
+    pinClickHandler: pinClickHandler
   };
 })();

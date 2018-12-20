@@ -34,7 +34,7 @@
     main.insertBefore(successItem, main.firstChild);
     mapFilters.removeEventListener('change', window.pin.filterPins);
     document.addEventListener('click', window.form.removeMessage);
-    document.addEventListener('keydown', window.form.onMessageEscPress);
+    document.addEventListener('keydown', window.form.messageEscPressHandler);
     window.map.resetMap();
     window.form.reset();
     adFormSubmit.disabled = false;
@@ -45,14 +45,15 @@
     errorItemText.textContent = errorMessage;
     errorItemButton.addEventListener('click', postFormAgain);
     document.addEventListener('click', window.form.removeMessage);
-    document.addEventListener('keydown', window.form.onMessageEscPress);
+    document.addEventListener('keydown', window.form.messageEscPressHandler);
     adFormSubmit.disabled = false;
   };
 
   window.form = {
-    onMessageEscPress: function (evt) {
+    messageEscPressHandler: function (evt) {
       window.util.isEscEvent(evt, window.form.removeMessage);
     },
+
     removeMessage: function () {
       switch (main.firstChild.classList.value) {
         case 'success':
@@ -64,8 +65,9 @@
       }
       mapOverlay.addEventListener('click', window.form.removeMessage);
       document.removeEventListener('click', window.form.removeMessage);
-      document.removeEventListener('keydown', window.form.onMessageEscPress);
+      document.removeEventListener('keydown', window.form.messageEscPressHandler);
     },
+
     submit: function () {
       window.form.checkTitleValue();
       window.form.checkPriceValue();
@@ -76,11 +78,13 @@
         adForm.reset();
       }
     },
+
     deactivatedForm: function (form, boolean) {
       for (var i = 0; i < form.children.length; i++) {
         form.children[i].disabled = boolean;
       }
     },
+
     checkTitleValue: function () {
       if (adFormTitle.validity.valueMissing) {
         var adFormErrorMessage = 'Добавьте заголовок объявления.';
@@ -94,6 +98,7 @@
 
       adFormTitle.setCustomValidity(adFormErrorMessage);
     },
+
     setPriceValue: function () {
       switch (adFormHouseType.value) {
         case 'bungalo':
@@ -113,6 +118,7 @@
       adFormPrice.placeholder = 'от ' + minPrice;
       window.form.checkPriceValue();
     },
+
     checkPriceValue: function () {
       if (adFormPrice.validity.valueMissing) {
         var adFormErrorMessage = 'Укажите цену за ночь.';
@@ -125,6 +131,7 @@
       }
       adFormPrice.setCustomValidity(adFormErrorMessage);
     },
+
     setTimeInOut: function (evt) {
       if (evt.target === adFormTimeIn) {
         adFormTimeOut.value = adFormTimeIn.value;
@@ -132,6 +139,7 @@
         adFormTimeIn.value = adFormTimeOut.value;
       }
     },
+
     checkCapacity: function () {
       adFormRoomNumber.addEventListener('change', function () {
         var currentVal = adFormRoomNumber.value;
@@ -153,6 +161,7 @@
         }
       });
     },
+
     reset: function () {
       map.classList.add('map--faded');
       mapFilters.reset();
