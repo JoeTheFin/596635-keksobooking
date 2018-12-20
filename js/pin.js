@@ -4,16 +4,16 @@
   var map = document.querySelector('.map');
   var pinTemplate = document.querySelector('#pin');
   var pinTemplateItem = pinTemplate.content.querySelector('.map__pin');
-  var divMapPins = document.querySelector('.map__pins');
+  var mapPins = document.querySelector('.map__pins');
   var mapFilters = map.querySelector('.map__filters');
-  var mapFiltersFormElements = mapFilters.children;
-  var typeSelect = mapFilters.querySelector('#housing-type');
-  var priceSelect = mapFilters.querySelector('#housing-price');
-  var roomsSelect = mapFilters.querySelector('#housing-rooms');
-  var guestsSelect = mapFilters.querySelector('#housing-guests');
-  var featuresSelect = mapFilters.querySelector('#housing-features');
+  var mapFiltersChild = mapFilters.children;
+  var houseType = mapFilters.querySelector('#housing-type');
+  var housePrice = mapFilters.querySelector('#housing-price');
+  var houseRooms = mapFilters.querySelector('#housing-rooms');
+  var houseGuests = mapFilters.querySelector('#housing-guests');
+  var houseFeatures = mapFilters.querySelector('#housing-features');
 
-  var HousingPriceValue = {
+  var HOUSING_PRICE = {
     low: {
       maxPrice: 10000
     },
@@ -44,11 +44,11 @@
           pinFragment.appendChild(pinElement);
         }
       }
-      divMapPins.appendChild(pinFragment);
+      mapPins.appendChild(pinFragment);
 
-      var mapPinsAll = divMapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+      var mapPinsAll = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
       for (i = 0; i < mapPinsAll.length; i++) {
-        window.map.onPinClick(mapPinsAll[i], mapArray[i]);
+        window.map.pinClickHandler(mapPinsAll[i], mapArray[i]);
       }
       mapFilters.addEventListener('change', window.pin.filterPins);
     },
@@ -57,54 +57,54 @@
       window.map.removeChild();
       window.map.removePins();
 
-      for (var i = 0; i < mapFiltersFormElements.length; i++) {
-        switch (mapFiltersFormElements[i]) {
+      for (var i = 0; i < mapFiltersChild.length; i++) {
+        switch (mapFiltersChild[i]) {
 
-          case typeSelect:
+          case houseType:
             var filteredArray = window.map.mapArray.filter(function (item) {
-              if (typeSelect.value === 'any') {
+              if (houseType.value === 'any') {
                 return true;
               }
-              return item.offer.type === typeSelect.value;
+              return item.offer.type === houseType.value;
             });
             break;
 
-          case priceSelect:
+          case housePrice:
             filteredArray = filteredArray.filter(function (item) {
-              switch (priceSelect.value) {
+              switch (housePrice.value) {
                 case 'low':
-                  return item.offer.price < HousingPriceValue.low.maxPrice;
+                  return item.offer.price < HOUSING_PRICE.low.maxPrice;
                 case 'middle':
-                  return item.offer.price >= HousingPriceValue.middle.minPrice
-                  && item.offer.price < HousingPriceValue.middle.maxPrice;
+                  return item.offer.price >= HOUSING_PRICE.middle.minPrice
+                  && item.offer.price < HOUSING_PRICE.middle.maxPrice;
                 case 'high':
-                  return item.offer.price >= HousingPriceValue.high.minPrice;
+                  return item.offer.price >= HOUSING_PRICE.high.minPrice;
                 default:
                   return true;
               }
             });
             break;
 
-          case roomsSelect:
+          case houseRooms:
             filteredArray = filteredArray.filter(function (item) {
-              if (roomsSelect.value === 'any') {
+              if (houseRooms.value === 'any') {
                 return true;
               }
-              return item.offer.rooms === parseInt(roomsSelect.value, 10);
+              return item.offer.rooms === parseInt(houseRooms.value, 10);
             });
             break;
 
-          case guestsSelect:
+          case houseGuests:
             filteredArray = filteredArray.filter(function (item) {
-              if (guestsSelect.value === 'any') {
+              if (houseGuests.value === 'any') {
                 return true;
               }
-              return item.offer.guests === parseInt(guestsSelect.value, 10);
+              return item.offer.guests === parseInt(houseGuests.value, 10);
             });
             break;
 
-          case featuresSelect:
-            var checkedInputs = featuresSelect.querySelectorAll('input:checked');
+          case houseFeatures:
+            var checkedInputs = houseFeatures.querySelectorAll('input:checked');
             filteredArray = filteredArray.filter(function (item) {
               var follow = 0;
               for (var j = 0; j < checkedInputs.length; j++) {

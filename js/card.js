@@ -39,12 +39,12 @@
       var featuresCard = cardElement.querySelector('.popup__features');
       featuresCard.innerHTML = '';
       var fragmentFeaturesCard = document.createDocumentFragment();
-      for (var f = 0; f < mapArray.offer.features.length; f++) {
+      for (var i = 0; i < mapArray.offer.features.length; i++) {
         if (mapArray.offer.features.length.length === 0) {
           featuresCard.removeChild(fragmentFeaturesCard);
         } else {
           var featuresElement = document.createElement('li');
-          featuresElement.classList = 'popup__feature popup__feature--' + mapArray.offer.features[f];
+          featuresElement.classList = 'popup__feature popup__feature--' + mapArray.offer.features[i];
           fragmentFeaturesCard.appendChild(featuresElement);
         }
       }
@@ -60,12 +60,12 @@
       var photosCard = cardElement.querySelector('.popup__photos');
       photosCard.innerHTML = '';
       var fragmentPhotosCard = document.createDocumentFragment();
-      for (var p = 0; p < mapArray.offer.photos.length; p++) {
+      for (var j = 0; j < mapArray.offer.photos.length; j++) {
         if (mapArray.offer.photos.length === 0) {
           photosCard.removeChild(fragmentPhotosCard);
         } else {
           var photosElement = document.createElement('img');
-          photosElement.src = mapArray.offer.photos[p];
+          photosElement.src = mapArray.offer.photos[j];
           photosElement.width = 45;
           photosElement.height = 40;
           fragmentPhotosCard.appendChild(photosElement);

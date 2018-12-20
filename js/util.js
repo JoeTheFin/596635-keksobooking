@@ -15,11 +15,13 @@
       var pinCoordinates = (pinLeftCoordinate + Math.floor(width)) + ', ' + (pinTopCoordinate + Math.floor(height));
       return pinCoordinates;
     },
+
     isEscEvent: function (evt, action) {
       if (evt.keyCode === window.util.ESC_KEY) {
         action();
       }
     },
+
     isEnterEvent: function (evt, action) {
       if (evt.keyCode === window.util.ENTER_KEYCODE) {
         action();
