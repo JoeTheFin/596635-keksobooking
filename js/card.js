@@ -11,13 +11,10 @@
       var cardElement = cardTemplateItem.cloneNode(true);
 
       cardElement.querySelector('.popup__title').textContent = mapArray.offer.title;
-
       cardElement.querySelector('.popup__text--address').textContent = mapArray.offer.address;
-
       cardElement.querySelector('.popup__text--price').textContent = mapArray.offer.price + '₽/ночь';
 
       var typeCard = cardElement.querySelector('.popup__type');
-
       switch (mapArray.offer.type) {
         case 'flat' :
           typeCard.textContent = 'Квартира';
@@ -54,6 +51,11 @@
       featuresCard.appendChild(fragmentFeaturesCard);
 
       cardElement.querySelector('.popup__description').textContent = mapArray.offer.description;
+      if (mapArray.offer.description.length === 0) {
+        cardElement.removeChild(cardElement.querySelector('.popup__description'));
+      } else {
+        cardElement.querySelector('.popup__description').textContent = mapArray.offer.description;
+      }
 
       var photosCard = cardElement.querySelector('.popup__photos');
       photosCard.innerHTML = '';
@@ -79,7 +81,7 @@
 
     createCardFragment: function (mapArray) {
       var cardFragment = document.createDocumentFragment();
-      var resultCard = this.renderCardElement(mapArray);
+      var resultCard = window.card.renderCardElement(mapArray);
       cardFragment.appendChild(resultCard);
       map.insertBefore(cardFragment, filtersContainer);
       return cardFragment;
