@@ -25,12 +25,13 @@
       minPrice: 50000
     }
   };
+  var MAX_PINS_ON_MAP = 5;
 
   window.pin = {
     createPinFragment: function (mapArray) {
       var pinFragment = document.createDocumentFragment();
 
-      var maxPins = mapArray.length > 5 ? 5 : mapArray.length;
+      var maxPins = mapArray.length > MAX_PINS_ON_MAP ? MAX_PINS_ON_MAP : mapArray.length;
       for (var i = 0; i < maxPins; i++) {
         if ('offer' in mapArray[i]) {
           var pinElement = pinTemplateItem.cloneNode(true);
@@ -42,14 +43,12 @@
           pinElementImage.alt = mapArray[i].offer.title;
 
           pinFragment.appendChild(pinElement);
+
+          window.map.addHandlerToPinClick(pinElement, mapArray[i]);
         }
       }
       mapPins.appendChild(pinFragment);
 
-      var mapPinsAll = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-      for (i = 0; i < mapPinsAll.length; i++) {
-        window.map.pinClickHandler(mapPinsAll[i], mapArray[i]);
-      }
       mapFilters.addEventListener('change', window.pin.filterPins);
     },
 

@@ -24,13 +24,13 @@
   var errorItemText = errorItem.querySelector('.error__message');
   var errorItemButton = errorItem.querySelector('.error__button');
 
-  var postFormAgain = function (evt) {
+  var postFormAgainHandler = function (evt) {
     evt.stopPropagation();
-    errorItemButton.removeEventListener('click', postFormAgain);
-    window.backend.post(new FormData(adForm), successHandler, errorHandler);
+    errorItemButton.removeEventListener('click', postFormAgainHandler);
+    window.backend.post(new FormData(adForm), successPostHandler, errorPostHandler);
   };
 
-  var successHandler = function () {
+  var successPostHandler = function () {
     main.insertBefore(successItem, main.firstChild);
     mapFilters.removeEventListener('change', window.pin.filterPins);
     document.addEventListener('click', window.form.removeMessage);
@@ -40,10 +40,10 @@
     adFormSubmit.disabled = false;
   };
 
-  var errorHandler = function (errorMessage) {
+  var errorPostHandler = function (errorMessage) {
     main.insertBefore(errorItem, main.firstChild);
     errorItemText.textContent = errorMessage;
-    errorItemButton.addEventListener('click', postFormAgain);
+    errorItemButton.addEventListener('click', postFormAgainHandler);
     document.addEventListener('click', window.form.removeMessage);
     document.addEventListener('keydown', window.form.messageEscPressHandler);
     adFormSubmit.disabled = false;
@@ -74,7 +74,7 @@
       window.form.checkCapacity();
       if (adForm.checkValidity()) {
         adFormSubmit.disabled = true;
-        window.backend.post(new FormData(adForm), successHandler, errorHandler);
+        window.backend.post(new FormData(adForm), successPostHandler, errorPostHandler);
         adForm.reset();
       }
     },
