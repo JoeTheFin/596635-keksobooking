@@ -31,18 +31,18 @@
       var currentPin = map.querySelector('.map__pin--active');
       currentPin.classList.remove('map__pin--active');
       mapOverlay.removeEventListener('click', removeChild);
-      document.removeEventListener('keydown', popupCloseKeyHandler);
+      document.removeEventListener('keydown', escapePressedHandler);
     }
   };
 
   var removePins = function () {
     var mapPinsAll = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var i = 0; i < mapPinsAll.length; i++) {
-      mapPins.removeChild(mapPinsAll[i]);
-    }
+    mapPinsAll.forEach(function (pin) {
+      mapPins.removeChild(pin);
+    });
   };
 
-  var popupCloseKeyHandler = function (evt) {
+  var escapePressedHandler = function (evt) {
     window.util.isEscEvent(evt, removeChild);
   };
 
@@ -56,11 +56,11 @@
     adForm.reset();
   };
 
-  var pinClickHandler = function (allPins, pinItem) {
-    allPins.addEventListener('click', function () {
+  var addHandlerToPinClick = function (pin, pinData) {
+    pin.addEventListener('click', function () {
       mapOverlay.addEventListener('click', removeChild);
       var popup = map.querySelector('.popup');
-      var titleAds = pinItem.offer.title;
+      var titleAds = pinData.offer.title;
       if (popup) {
         if (popup.querySelector('.popup__title').textContent === titleAds) {
           return;
@@ -69,17 +69,17 @@
         mapOverlay.addEventListener('click', removeChild);
       }
 
-      window.card.createCardFragment(pinItem);
+      window.card.createCardFragment(pinData);
       popup = map.querySelector('.popup');
-      allPins.classList.add('map__pin--active');
+      pin.classList.add('map__pin--active');
       var popupClose = popup.querySelector('.popup__close');
       popupClose.addEventListener('click', removeChild);
 
-      document.addEventListener('keydown', popupCloseKeyHandler);
+      document.addEventListener('keydown', escapePressedHandler);
     });
   };
 
-  var successHandler = function (pinsArray) {
+  var successLoadHandler = function (pinsArray) {
     window.map.mapArray = pinsArray;
 
     window.pin.createPinFragment(pinsArray);
@@ -107,7 +107,7 @@
     adFormReset.addEventListener('click', window.form.reset);
   };
 
-  var errorHandler = function (errorMessage) {
+  var errorLoadHandler = function (errorMessage) {
     main.insertBefore(errorItem, main.firstChild);
     errorItemText.textContent = errorMessage;
     errorItemButton.addEventListener('click', getPinsAgain);
@@ -118,14 +118,14 @@
   var getPinsAgain = function (event) {
     event.stopPropagation();
     errorItemButton.removeEventListener('click', getPinsAgain);
-    window.backend.get(successHandler, errorHandler);
+    window.backend.get(successLoadHandler, errorLoadHandler);
   };
 
   window.form.deactivatedForm(adForm, true);
   window.form.deactivatedForm(mapFilters, true);
 
   var activatePage = function () {
-    window.backend.get(successHandler, errorHandler);
+    window.backend.get(successLoadHandler, errorLoadHandler);
   };
 
   mapPinMain.addEventListener('mousedown', function (event) {
@@ -189,6 +189,6 @@
     resetMap: resetMap,
     removeChild: removeChild,
     removePins: removePins,
-    pinClickHandler: pinClickHandler
+    addHandlerToPinClick: addHandlerToPinClick
   };
 })();

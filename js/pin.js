@@ -25,12 +25,13 @@
       minPrice: 50000
     }
   };
+  var MAX_PINS_ON_MAP = 5;
 
   window.pin = {
     createPinFragment: function (mapArray) {
       var pinFragment = document.createDocumentFragment();
 
-      var maxPins = mapArray.length > 5 ? 5 : mapArray.length;
+      var maxPins = mapArray.length > MAX_PINS_ON_MAP ? MAX_PINS_ON_MAP : mapArray.length;
       for (var i = 0; i < maxPins; i++) {
         if ('offer' in mapArray[i]) {
           var pinElement = pinTemplateItem.cloneNode(true);
@@ -42,14 +43,12 @@
           pinElementImage.alt = mapArray[i].offer.title;
 
           pinFragment.appendChild(pinElement);
+
+          window.map.addHandlerToPinClick(pinElement, mapArray[i]);
         }
       }
       mapPins.appendChild(pinFragment);
 
-      var mapPinsAll = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-      for (i = 0; i < mapPinsAll.length; i++) {
-        window.map.pinClickHandler(mapPinsAll[i], mapArray[i]);
-      }
       mapFilters.addEventListener('change', window.pin.filterPins);
     },
 
@@ -62,10 +61,7 @@
 
           case houseType:
             var filteredArray = window.map.mapArray.filter(function (item) {
-              if (houseType.value === 'any') {
-                return true;
-              }
-              return item.offer.type === houseType.value;
+              return houseType.value === 'any' ? item : item.offer.type === houseType.value;
             });
             break;
 
@@ -87,19 +83,13 @@
 
           case houseRooms:
             filteredArray = filteredArray.filter(function (item) {
-              if (houseRooms.value === 'any') {
-                return true;
-              }
-              return item.offer.rooms === parseInt(houseRooms.value, 10);
+              return houseRooms.value === 'any' ? item : item.offer.rooms === parseInt(houseRooms.value, 10);
             });
             break;
 
           case houseGuests:
             filteredArray = filteredArray.filter(function (item) {
-              if (houseGuests.value === 'any') {
-                return true;
-              }
-              return item.offer.guests === parseInt(houseGuests.value, 10);
+              return houseGuests.value === 'any' ? item : item.offer.guests === parseInt(houseGuests.value, 10);
             });
             break;
 
