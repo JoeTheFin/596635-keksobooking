@@ -37,9 +37,9 @@
 
   var removePins = function () {
     var mapPinsAll = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var i = 0; i < mapPinsAll.length; i++) {
-      mapPins.removeChild(mapPinsAll[i]);
-    }
+    mapPinsAll.forEach(function (pin) {
+      mapPins.removeChild(pin);
+    });
   };
 
   var escapePressedHandler = function (evt) {

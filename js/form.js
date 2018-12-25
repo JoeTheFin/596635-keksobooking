@@ -144,9 +144,9 @@
       adFormRoomNumber.addEventListener('change', function () {
         var currentVal = adFormRoomNumber.value;
         if (currentVal > adFormCapacity.children.length) {
-          for (var i = 0; i < adFormCapacity.children.length; i++) {
-            adFormCapacity.children[i].disabled = true;
-          }
+          adFormCapacity.children.forEach(function (child) {
+            child.disabled = true;
+          });
           adFormCapacity.children[adFormCapacity.children.length - 1].disabled = false;
           adFormCapacity.children[adFormCapacity.children.length - 1].selected = true;
         } else {

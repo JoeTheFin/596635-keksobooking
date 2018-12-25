@@ -61,10 +61,7 @@
 
           case houseType:
             var filteredArray = window.map.mapArray.filter(function (item) {
-              if (houseType.value === 'any') {
-                return true;
-              }
-              return item.offer.type === houseType.value;
+              return houseType.value === 'any' ? item : item.offer.type === houseType.value;
             });
             break;
 
@@ -86,19 +83,13 @@
 
           case houseRooms:
             filteredArray = filteredArray.filter(function (item) {
-              if (houseRooms.value === 'any') {
-                return true;
-              }
-              return item.offer.rooms === parseInt(houseRooms.value, 10);
+              return houseRooms.value === 'any' ? item : item.offer.rooms === parseInt(houseRooms.value, 10);
             });
             break;
 
           case houseGuests:
             filteredArray = filteredArray.filter(function (item) {
-              if (houseGuests.value === 'any') {
-                return true;
-              }
-              return item.offer.guests === parseInt(houseGuests.value, 10);
+              return houseGuests.value === 'any' ? item : item.offer.guests === parseInt(houseGuests.value, 10);
             });
             break;
 
